@@ -1,27 +1,89 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "tw-animate-css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Updated color tokens to green theme for NGO */
+  --background: 0 0% 100%; /* White background */
+  --foreground: 0 0% 20%; /* Deep gray text */
+  --card: 0 0% 98%; /* Light gray card background */
+  --card-foreground: 0 0% 35%; /* Medium gray card text */
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 20%;
+  --primary: 142 76% 36%; /* Forest green primary color */
+  --primary-foreground: 0 0% 100%; /* White text on green */
+  --secondary: 0 0% 56%; /* Medium gray secondary */
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 97%; /* Light gray muted */
+  --muted-foreground: 0 0% 35%;
+  --accent: 164 70% 45%; /* Teal accent */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 92%;
+  --input: 0 0% 100%;
+  --ring: 142 76% 36%; /* Green ring */
+  --chart-1: 142 76% 36%; /* Forest green for charts */
+  --chart-2: 164 70% 45%; /* Teal for charts */
+  --chart-3: 142 50% 50%; /* Light green for charts */
+  --chart-4: 164 50% 35%; /* Dark teal for charts */
+  --chart-5: 142 76% 25%; /* Dark green for charts */
+  --radius: 0.5rem;
+  --sidebar: 0 0% 97%;
+  --sidebar-foreground: 0 0% 20%;
+  --sidebar-primary: 0 0% 100%;
+  --sidebar-primary-foreground: 0 0% 20%;
+  --sidebar-accent: 142 76% 36%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 0 0% 92%;
+  --sidebar-ring: 142 76% 36%;
+  --font-inter: "Inter", sans-serif;
+  --font-playfair: "Playfair Display", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: 0 0% 15%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 15%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 15%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 142 76% 36%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 27%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 27%;
+  --muted-foreground: 0 0% 71%;
+  --accent: 164 70% 45%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 27%;
+  --input: 0 0% 27%;
+  --ring: 142 76% 36%;
+  --chart-1: 142 76% 36%;
+  --chart-2: 164 70% 45%;
+  --chart-3: 142 50% 50%;
+  --chart-4: 164 50% 35%;
+  --chart-5: 142 76% 25%;
+  --sidebar: 0 0% 20%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 264 85% 50%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 0 0% 27%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 0 0% 27%;
+  --sidebar-ring: 0 0% 44%;
+}
+
+
+* {
+  border-color: var(--border);
+  outline-color: var(--ring);
 }
 
 body {
+  background-color: var(--background);
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
 }
