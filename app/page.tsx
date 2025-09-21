@@ -1,4 +1,4 @@
-import { Header } from "@/components/header"
+import { PublicLayout } from "@/components/public-layout"
 import { Hero } from "@/components/hero"
 import { About } from "@/components/about"
 import { Stats } from "@/components/stats"
@@ -7,12 +7,10 @@ import { Impact } from "@/components/impact"
 import { DonationTransparency } from "@/components/donation-transparency"
 import { Initiatives } from "@/components/initiatives"
 import { Blog } from "@/components/blog"
-import { Footer } from "@/components/footer"
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <Header />
+    <PublicLayout>
       <Hero />
       <About />
       <Stats />
@@ -21,7 +19,6 @@ export default function Home() {
       <DonationTransparency />
       <Initiatives />
       <Blog />
-      <Footer />
-    </main>
+    </PublicLayout>
   )
 }

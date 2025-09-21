@@ -1,14 +1,11 @@
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
+import { PublicLayout } from "@/components/public-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Users, Heart, TreePine, GraduationCap, Shield, Target } from "lucide-react"
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen">
-      <Header />
-
+    <PublicLayout>
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-20">
         <div className="container mx-auto px-4">
@@ -207,8 +204,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      <Footer />
-    </main>
+    </PublicLayout>
   )
 }

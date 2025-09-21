@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Admin Panel Specific Styles */
+.admin-sidebar {
+  @apply bg-white shadow-lg border-r border-gray-200;
+}
+
+.admin-main {
+  @apply flex-1 overflow-hidden;
+}
+
+.admin-content {
+  @apply flex-1 overflow-auto p-6;
+}
+
+.admin-card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+}
+
+.admin-button {
+  @apply px-4 py-2 rounded-md font-medium transition-colors;
+}
+
+.admin-button-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.admin-button-secondary {
+  @apply bg-gray-200 text-gray-900 hover:bg-gray-300;
+}
+
+.admin-button-danger {
+  @apply bg-red-600 text-white hover:bg-red-700;
+}
+
+.admin-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.admin-textarea {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  resize: vertical;
+}
+
+.admin-select {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.admin-label {
+  @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+.admin-table {
+  @apply min-w-full divide-y divide-gray-200;
+}
+
+.admin-table th {
+  @apply px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.admin-table td {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+}
