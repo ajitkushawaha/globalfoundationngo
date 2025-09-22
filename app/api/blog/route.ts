@@ -2,12 +2,35 @@ import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import BlogPost from '@/lib/models/BlogPost'
 
-// GET /api/blog - Get all blog posts
+// GET /api/blog - Get all blog posts or single post by slug
 export async function GET(request: NextRequest) {
   try {
     await connectDB()
     
     const { searchParams } = new URL(request.url)
+    const slug = searchParams.get('slug')
+    
+    // If slug is provided, return single post
+    if (slug) {
+      const post = await BlogPost.findOne({ slug, published: true }).lean()
+      
+      if (!post) {
+        return NextResponse.json(
+          { success: false, error: 'Blog post not found' },
+          { status: 404 }
+        )
+      }
+      
+      // Increment view count
+      await BlogPost.findOneAndUpdate({ slug }, { $inc: { views: 1 } })
+      
+      return NextResponse.json({
+        success: true,
+        data: [post] // Return as array for consistency
+      })
+    }
+    
+    // Otherwise, return all posts with pagination
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const category = searchParams.get('category')

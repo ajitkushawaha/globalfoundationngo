@@ -11,8 +11,11 @@ export interface IBlogPost extends Document {
   featured: boolean
   published: boolean
   publishedAt?: Date
+  mediaType: 'image' | 'video'
   image?: string
   imageAlt?: string
+  videoUrl?: string
+  videoTitle?: string
   readTime: string
   views: number
   seoTitle?: string
@@ -69,11 +72,24 @@ const BlogPostSchema = new Schema<IBlogPost>({
   publishedAt: {
     type: Date
   },
+  mediaType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'image'
+  },
   image: {
     type: String,
     trim: true
   },
   imageAlt: {
+    type: String,
+    trim: true
+  },
+  videoUrl: {
+    type: String,
+    trim: true
+  },
+  videoTitle: {
     type: String,
     trim: true
   },

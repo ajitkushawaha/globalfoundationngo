@@ -2,67 +2,104 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Eye } from 'lucide-react'
+import { ArrowLeft, Save, Loader2 } from 'lucide-react'
 import { RichTextEditor } from '@/components/rich-text-editor'
 import { MediaUpload } from '@/components/media-upload'
 
-export default function NewBlogPost() {
+interface BlogPost {
+  _id: string
+  title: string
+  excerpt: string
+  content: string
+  author: string
+  category: string
+  tags: string[]
+  mediaType: 'image' | 'video'
+  image: string
+  imageAlt: string
+  videoUrl: string
+  videoTitle: string
+  seoTitle: string
+  seoDescription: string
+  featured: boolean
+  published: boolean
+  slug: string
+}
+
+interface EditBlogPostClientProps {
+  initialData: BlogPost
+}
+
+export function EditBlogPostClient({ initialData }: EditBlogPostClientProps) {
   const router = useRouter()
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
   const [formData, setFormData] = useState({
-    title: '',
-    excerpt: '',
-    content: '',
-    author: '',
-    category: 'Education',
-    tags: '',
-    mediaType: 'image' as 'image' | 'video',
-    image: '',
-    imageAlt: '',
-    videoUrl: '',
-    videoTitle: '',
-    featured: false,
-    published: false,
-    seoTitle: '',
-    seoDescription: ''
+    title: initialData.title || '',
+    excerpt: initialData.excerpt || '',
+    content: initialData.content || '',
+    author: initialData.author || '',
+    category: initialData.category || 'Education',
+    tags: initialData.tags ? initialData.tags.join(', ') : '',
+    mediaType: initialData.mediaType || 'image' as 'image' | 'video',
+    image: initialData.image || '',
+    imageAlt: initialData.imageAlt || '',
+    videoUrl: initialData.videoUrl || '',
+    videoTitle: initialData.videoTitle || '',
+    seoTitle: initialData.seoTitle || '',
+    seoDescription: initialData.seoDescription || '',
+    featured: initialData.featured || false,
+    published: initialData.published || false
   })
-  const [loading, setLoading] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    try {
-      const response = await fetch(`${window.location.origin}/api/blog`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...formData,
-          tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-        })
-      })
-
-      if (response.ok) {
-        router.push('/admin?tab=blog')
-      } else {
-        const error = await response.json()
-        alert(error.error || 'Failed to create blog post')
-      }
-    } catch (error) {
-      console.error('Error creating blog post:', error)
-      alert('Failed to create blog post')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }))
+    
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked
+      setFormData(prev => ({ ...prev, [name]: checked }))
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }))
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      setSaving(true)
+      setError(null)
+
+      // Convert tags string to array
+      const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+
+      const postData = {
+        ...formData,
+        tags: tagsArray
+      }
+
+      const response = await fetch(`/api/blog/${initialData._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        router.push('/admin/blog')
+      } else {
+        setError(data.error || 'Failed to update blog post')
+      }
+    } catch (err) {
+      console.error('Error updating blog post:', err)
+      setError('Failed to update blog post')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -76,9 +113,9 @@ export default function NewBlogPost() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Blog Posts
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Create New Blog Post</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Edit Blog Post</h1>
           <p className="text-gray-600 mt-2">
-            Use the rich text editor below to create beautifully formatted blog posts. All fields with * are required.
+            Update your blog post using the rich text editor below. All fields with * are required.
           </p>
           
           {/* Quick Reference Guide */}
@@ -93,6 +130,12 @@ export default function NewBlogPost() {
             </div>
           </div>
         </div>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="admin-card">
@@ -147,15 +190,19 @@ export default function NewBlogPost() {
                 placeholder="Start writing your blog post... Use the toolbar above to add headings, lists, and formatting."
               />
             </div>
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div className="admin-card">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Categorization</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="admin-label">Category *</label>
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="admin-select"
+                  className="admin-input"
                   required
                 >
                   <option value="Education">Education</option>
@@ -276,18 +323,26 @@ export default function NewBlogPost() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="admin-button admin-button-secondary"
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
             >
               Cancel
             </button>
-            
             <button
               type="submit"
-              disabled={loading}
-              className="admin-button admin-button-primary"
+              disabled={saving}
+              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 flex items-center"
             >
-              {loading ? 'Saving...' : 'Save Post'}
-              <Save className="h-4 w-4 ml-2" />
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Update Post
+                </>
+              )}
             </button>
           </div>
         </form>

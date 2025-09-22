@@ -4,7 +4,7 @@ import { Blog } from "@/components/blog"
 export default function BlogPage() {
   return (
     <PublicLayout>
-      <div className="pt-16">
+      <div className="px-4" >
         <Blog />
       </div>
     </PublicLayout>

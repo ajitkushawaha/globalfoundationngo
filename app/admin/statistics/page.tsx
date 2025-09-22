@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { AdminLayout } from '@/components/admin-layout'
+import { EditStatisticModal } from '@/components/edit-statistic-modal'
 import { Plus, Edit, Trash2 } from 'lucide-react'
 
 interface Statistic {
@@ -21,6 +22,8 @@ interface Statistic {
 export default function StatisticsPage() {
   const [statistics, setStatistics] = useState<Statistic[]>([])
   const [loading, setLoading] = useState(false)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [selectedStatistic, setSelectedStatistic] = useState<Statistic | null>(null)
 
   const loadData = async () => {
     try {
@@ -79,6 +82,22 @@ export default function StatisticsPage() {
     }
   }
 
+  const handleEditClick = (statistic: Statistic) => {
+    setSelectedStatistic(statistic)
+    setEditModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setEditModalOpen(false)
+    setSelectedStatistic(null)
+  }
+
+  const handleStatisticUpdate = (updatedStatistic: Statistic) => {
+    setStatistics(statistics.map(stat => 
+      stat._id === updatedStatistic._id ? updatedStatistic : stat
+    ))
+  }
+
   return (
     <AdminLayout title="Statistics" subtitle="Statistics Management">
       <div className="mb-6 flex justify-end space-x-3">
@@ -129,7 +148,10 @@ export default function StatisticsPage() {
             <div className="flex justify-between items-center">
               <span className="text-xs text-gray-400">Type: {stat.type}</span>
               <div className="flex space-x-2">
-                <button className="text-blue-600 hover:text-blue-800">
+                <button 
+                  onClick={() => handleEditClick(stat)}
+                  className="text-blue-600 hover:text-blue-800"
+                >
                   <Edit className="h-4 w-4" />
                 </button>
                 <button 
@@ -160,6 +182,14 @@ export default function StatisticsPage() {
           </div>
         </div>
       )}
+
+      {/* Edit Modal */}
+      <EditStatisticModal
+        isOpen={editModalOpen}
+        onClose={handleModalClose}
+        statistic={selectedStatistic}
+        onSave={handleStatisticUpdate}
+      />
     </AdminLayout>
   )
 }

@@ -29,21 +29,47 @@ export function AdminSidebar({ sidebarOpen, setSidebarOpen }: AdminSidebarProps)
 
   return (
     <>
-      {/* Sidebar */}
+      {/* Desktop Sidebar - Sticky */}
+      <div className="hidden lg:block sticky top-0 h-screen w-64 bg-white shadow-lg">
+        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+          <h1 className="text-xl font-bold text-gray-900">GEKCT Admin</h1>
+        </div>
+        
+        <nav className="mt-6 overflow-y-auto h-[calc(100vh-4rem)]">
+          {navigation.map((item) => {
+            const Icon = item.icon
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center px-6 py-3 text-sm font-medium transition-colors ${
+                  item.current
+                    ? 'bg-blue-50 border-r-2 border-blue-600 text-blue-600'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+              >
+                <Icon className="h-5 w-5 mr-3" />
+                {item.name}
+              </Link>
+            )
+          })}
+        </nav>
+      </div>
+
+      {/* Mobile Sidebar - Overlay */}
       <div className={`fixed h-screen inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 lg:static lg:inset-0`}>
+      } lg:hidden`}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <h1 className="text-xl font-bold text-gray-900">GEKCT Admin</h1>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden"
           >
             <X className="h-6 w-6" />
           </button>
         </div>
         
-        <nav className="mt-6">
+        <nav className="mt-6 overflow-y-auto h-[calc(100vh-4rem)]">
           {navigation.map((item) => {
             const Icon = item.icon
             return (
