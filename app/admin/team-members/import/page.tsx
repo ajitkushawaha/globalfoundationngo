@@ -14,7 +14,13 @@ export default function ImportTeamMembersPage() {
   const router = useRouter()
   const [csvData, setCsvData] = useState('')
   const [isImporting, setIsImporting] = useState(false)
-  const [importResults, setImportResults] = useState(null)
+  const [importResults, setImportResults] = useState<{
+    imported: number
+    failed: number
+    skipped: number
+    errors: string[]
+    importedMembers?: any[]
+  } | null>(null)
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]

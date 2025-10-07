@@ -306,7 +306,7 @@ export default function EditTeamMemberPage() {
 
   if (loading) {
     return (
-      <AdminLayout>
+      <AdminLayout title="Edit Team Member">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
@@ -319,7 +319,7 @@ export default function EditTeamMemberPage() {
 
   if (error) {
     return (
-      <AdminLayout>
+      <AdminLayout title="Edit Team Member">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-red-500 mb-4">
@@ -339,7 +339,7 @@ export default function EditTeamMemberPage() {
 
   if (!member) {
     return (
-      <AdminLayout>
+      <AdminLayout title="Edit Team Member">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-muted-foreground mb-4">
@@ -357,7 +357,7 @@ export default function EditTeamMemberPage() {
   }
 
   return (
-    <AdminLayout>
+    <AdminLayout title="Edit Team Member">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

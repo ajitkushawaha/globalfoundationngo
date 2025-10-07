@@ -5,18 +5,14 @@ import Link from 'next/link'
 import { AdminLayout } from '@/components/admin-layout'
 import { EditStatisticModal } from '@/components/edit-statistic-modal'
 import { Plus, Edit, Trash2 } from 'lucide-react'
+import { IStatistic } from '@/lib/models/Statistic'
+import { Document } from 'mongoose'
 
-interface Statistic {
+// Create a plain object type for API responses
+type Statistic = Omit<IStatistic, keyof Document> & {
   _id: string
-  type: string
-  value: string
-  label: string
-  description: string
-  icon: string
-  color: string
-  bgColor: string
-  order: number
-  isActive: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 export default function StatisticsPage() {

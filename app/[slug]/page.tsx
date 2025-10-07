@@ -37,14 +37,17 @@ export async function generateMetadata({ params }: PageProps) {
       }
     }
 
+    // Ensure page is a single object, not an array
+    const pageData = Array.isArray(page) ? page[0] : page
+
     return {
-      title: page.seoTitle || page.title,
-      description: page.seoDescription || page.excerpt,
-      keywords: page.seoKeywords?.join(', '),
+      title: pageData.seoTitle || pageData.title,
+      description: pageData.seoDescription || pageData.excerpt,
+      keywords: pageData.seoKeywords?.join(', '),
       openGraph: {
-        title: page.seoTitle || page.title,
-        description: page.seoDescription || page.excerpt,
-        images: page.featuredImage ? [page.featuredImage] : [],
+        title: pageData.seoTitle || pageData.title,
+        description: pageData.seoDescription || pageData.excerpt,
+        images: pageData.featuredImage ? [pageData.featuredImage] : [],
       },
     }
   } catch (error) {
@@ -69,6 +72,9 @@ export default async function DynamicPage({ params }: PageProps) {
       notFound()
     }
 
+    // Ensure page is a single object, not an array
+    const pageData = Array.isArray(page) ? page[0] : page
+
     const formatContent = (content: string) => {
       return content
         .replace(/^# (.+)$/gm, '<h1 class="text-4xl font-bold mb-6 text-gray-900">$1</h1>')
@@ -82,7 +88,7 @@ export default async function DynamicPage({ params }: PageProps) {
         .replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">$1</code>')
         .replace(/\n\n/g, '</p><p class="mb-4 text-gray-700 leading-relaxed">')
         .replace(/^(?!<[h|b|u|l|d|c])/gm, '<p class="mb-4 text-gray-700 leading-relaxed">')
-        .replace(/(<li[^>]*>.*<\/li>)/gs, '<ul class="mb-6">$1</ul>')
+        .replace(/(<li[^>]*>.*?<\/li>)/g, '<ul class="mb-6">$1</ul>')
     }
 
     return (
@@ -93,18 +99,18 @@ export default async function DynamicPage({ params }: PageProps) {
               {/* Page Header */}
               <div className="mb-8">
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                  {page.title}
+                  {pageData.title}
                 </h1>
-                {page.excerpt && (
+                {pageData.excerpt && (
                   <p className="text-xl text-gray-600 mb-6">
-                    {page.excerpt}
+                    {pageData.excerpt}
                   </p>
                 )}
-                {page.featuredImage && (
+                {pageData.featuredImage && (
                   <div className="mb-8">
                     <img
-                      src={page.featuredImage}
-                      alt={page.featuredImageAlt || page.title}
+                      src={pageData.featuredImage}
+                      alt={pageData.featuredImageAlt || pageData.title}
                       className="w-full h-64 object-cover rounded-lg shadow-lg"
                     />
                   </div>
@@ -114,9 +120,9 @@ export default async function DynamicPage({ params }: PageProps) {
               {/* Page Content */}
               <div className="prose prose-lg max-w-none">
                 <div 
-                  dangerouslySetInnerHTML={{ 
-                    __html: formatContent(page.content) 
-                  }}
+                dangerouslySetInnerHTML={{ 
+                  __html: formatContent(pageData.content) 
+                }}
                 />
               </div>
 
@@ -124,11 +130,11 @@ export default async function DynamicPage({ params }: PageProps) {
               <div className="mt-12 pt-8 border-t border-gray-200">
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <div>
-                    <p>Last updated: {new Date(page.updatedAt).toLocaleDateString()}</p>
-                    <p>Author: {page.author}</p>
+                    <p>Last updated: {new Date(pageData.updatedAt).toLocaleDateString()}</p>
+                    <p>Author: {pageData.author}</p>
                   </div>
                   <div>
-                    <p>Page Type: {page.pageType}</p>
+                    <p>Page Type: {pageData.pageType}</p>
                   </div>
                 </div>
               </div>

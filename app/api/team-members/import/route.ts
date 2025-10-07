@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Get headers
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
+    const headers = lines[0].split(',').map((h: string) => h.trim().replace(/"/g, ''))
     
     // Parse data rows
     const teamMembers = []
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         
         // Create row object
         const row: any = {}
-        headers.forEach((header, index) => {
+        headers.forEach((header: string, index: number) => {
           row[header] = values[index]?.trim() || ''
         })
         

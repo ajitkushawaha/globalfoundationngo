@@ -129,7 +129,7 @@ export function PageEditor({ page, onSave, onPreview, loading = false }: PageEdi
       .replace(/^> (.+)$/gm, '<blockquote class="border-l-4 border-gray-300 pl-4 italic">$1</blockquote>')
       .replace(/\n\n/g, '</p><p class="mb-4">')
       .replace(/^(?!<[h|b|u|l|d])/gm, '<p class="mb-4">')
-      .replace(/(<li[^>]*>.*<\/li>)/gs, '<ul class="list-disc list-inside mb-4">$1</ul>')
+      .replace(/(<li[^>]*>.*?<\/li>)/g, '<ul class="list-disc list-inside mb-4">$1</ul>')
   }
 
   const insertFormatting = (type: string) => {
@@ -205,7 +205,7 @@ export function PageEditor({ page, onSave, onPreview, loading = false }: PageEdi
                     <Eye className="h-5 w-5 text-blue-600" />
                     <h3 className="text-lg font-semibold">Page Preview</h3>
                   </div>
-                  <Badge variant="outline" className="text-blue-600">
+                  <Badge className="text-blue-600 border border-blue-300">
                     {formData.slug}
                   </Badge>
                   <Badge className={formData.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>

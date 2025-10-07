@@ -7,18 +7,14 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { X, Save, Loader2 } from 'lucide-react'
+import { IStatistic } from '@/lib/models/Statistic'
+import { Document } from 'mongoose'
 
-interface Statistic {
+// Create a plain object type for API responses
+type Statistic = Omit<IStatistic, keyof Document> & {
   _id: string
-  type: 'impact' | 'achievement' | 'milestone'
-  value: string
-  label: string
-  description: string
-  icon: string
-  color: string
-  bgColor: string
-  order: number
-  isActive: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 interface EditStatisticModalProps {
