@@ -8,7 +8,8 @@ import {
   FileText, 
   Heart, 
   Settings, 
-  X
+  X,
+  Globe
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -21,6 +22,7 @@ export function AdminSidebar({ sidebarOpen, setSidebarOpen }: AdminSidebarProps)
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: BarChart3, current: pathname === '/admin' },
+    { name: 'Pages', href: '/admin/pages', icon: Globe, current: pathname.startsWith('/admin/pages') },
     { name: 'Blog Posts', href: '/admin/blog', icon: FileText, current: pathname.startsWith('/admin/blog') },
     { name: 'Statistics', href: '/admin/statistics', icon: BarChart3, current: pathname.startsWith('/admin/statistics') },
     { name: 'Initiatives', href: '/admin/initiatives', icon: Heart, current: pathname.startsWith('/admin/initiatives') },

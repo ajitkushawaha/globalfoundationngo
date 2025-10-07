@@ -8,9 +8,10 @@ interface PaginationProps {
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
+  loading?: boolean
 }
 
-export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+export function Pagination({ currentPage, totalPages, onPageChange, loading = false }: PaginationProps) {
   const getVisiblePages = () => {
     const delta = 2
     const range = []
@@ -45,7 +46,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
         variant="outline"
         size="sm"
         onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
+        disabled={currentPage === 1 || loading}
         className="flex items-center px-4 py-2"
       >
         <ChevronLeft className="h-4 w-4 mr-1" />
@@ -62,6 +63,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
                 variant={currentPage === page ? "default" : "outline"}
                 size="sm"
                 onClick={() => onPageChange(page as number)}
+                disabled={loading}
                 className="min-w-[40px] h-10"
               >
                 {page}
@@ -75,7 +77,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
         variant="outline"
         size="sm"
         onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        disabled={currentPage === totalPages || loading}
         className="flex items-center px-4 py-2"
       >
         Next

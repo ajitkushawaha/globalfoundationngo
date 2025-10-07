@@ -39,6 +39,7 @@ export function Blog() {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
   const [latestPost, setLatestPost] = useState<BlogPost | null>(null)
   const [loading, setLoading] = useState(true)
+  const [paginationLoading, setPaginationLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -102,9 +103,19 @@ export function Blog() {
     return categoryIcons[category] || categoryIcons.default
   }
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = async (page: number) => {
+    setPaginationLoading(true)
     setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    
+    // Scroll to the blog posts section instead of top of page
+    const blogSection = document.getElementById('blog-posts-section')
+    if (blogSection) {
+      blogSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    
+    // Add a small delay to show the loading state
+    await new Promise(resolve => setTimeout(resolve, 300))
+    setPaginationLoading(false)
   }
 
   if (loading) {
@@ -156,14 +167,14 @@ export function Blog() {
 
   return (
     <section id="blog" className="bg-background">
-      <div className="container">
+      <div className="container p-4">
         {/* Latest Blog Section */}
         {latestPost && (
           <LatestBlog blogPost={latestPost} />
         )}
 
         {/* Blog Posts Section */}
-        <div className="py-16">
+        <div id="blog-posts-section" className="py-16">
           <div className="text-center mb-12">
             <div className="inline-flex items-center px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-4">
               All Stories
@@ -178,8 +189,17 @@ export function Blog() {
           </div>
 
           {/* Blog Posts Grid - 6 posts per page */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">   
-          {blogPosts.map((post) => {
+          <div className="relative">
+            {paginationLoading && (
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  <span className="text-sm text-muted-foreground">Loading posts...</span>
+                </div>
+              </div>
+            )}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-500 ease-in-out">   
+            {blogPosts.map((post) => {
             const IconComponent = getCategoryIcon(post.category)
             return (
               <Card key={post._id} className="overflow-hidden hover:shadow-lg transition-all duration-300 group">
@@ -242,6 +262,7 @@ export function Blog() {
               </Card>
             )
           })}
+            </div>
           </div>
 
           {/* Pagination */}
@@ -249,6 +270,7 @@ export function Blog() {
             currentPage={pagination.page}
             totalPages={pagination.pages}
             onPageChange={handlePageChange}
+            loading={paginationLoading}
           />
         </div>
       </div>

@@ -1,10 +1,19 @@
-"use client"
-
 import { PublicLayout } from "@/components/public-layout"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Shield, FileText, Award, CheckCircle, Download, Eye, Calendar, Building2 } from "lucide-react"
-import Image from "next/image"
+import { Shield, FileText, BarChart3, Users, Eye, CheckCircle, TrendingUp, PieChart, DollarSign, Target, Award, Mail, Phone, MapPin } from "lucide-react"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Trust & Transparency - Global Education and Charitable Trust",
+  description: "Learn about GEKCT's commitment to transparency, accountability, and good governance. View our financial reports, impact metrics, and governance structure.",
+  keywords: ["transparency", "accountability", "governance", "financial reports", "impact", "charity", "non-profit", "trust"],
+  openGraph: {
+    title: "Trust & Transparency - Global Education and Charitable Trust",
+    description: "Learn about GEKCT's commitment to transparency, accountability, and good governance.",
+    type: "website",
+  },
+}
 
 export default function TrustTransparencyPage() {
   return (
@@ -17,224 +26,65 @@ export default function TrustTransparencyPage() {
               Trust & Transparency
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold text-balance mb-6">
-              Building Trust Through
-              <span className="text-primary"> Transparency</span>
+              Building <span className="text-primary">Trust</span> Through
+              <span className="text-primary block">Transparency</span>
             </h1>
             <p className="text-xl text-muted-foreground text-balance max-w-3xl mx-auto">
-              We believe in complete transparency and accountability. Here are our legal documents, 
-              certifications, and financial reports that demonstrate our commitment to ethical practices.
+              We believe that transparency and accountability are fundamental to building trust with our supporters 
+              and the communities we serve. Every donation and resource is used effectively and ethically.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Legal Certifications */}
+      {/* Our Commitment */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-4">
-                Legal Certifications
-              </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-                Our Legal Foundation
+                Our Commitment
               </h2>
               <div className="w-24 h-1 bg-primary mx-auto mb-6" />
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Official documents that establish our legal standing and compliance with Indian laws.
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                We are committed to maintaining the highest standards of transparency in all our operations
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FileText className="w-8 h-8 text-blue-600" />
+            <div className="grid md:grid-cols-3 gap-8">
+              <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Shield className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">Registration Certificate</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Registered under Bombay Public Trust Act, 1950
+                  <h3 className="text-xl font-bold mb-4">Financial Integrity</h3>
+                  <p className="text-muted-foreground">
+                    Every rupee is accounted for with detailed financial statements and regular audits
                   </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Registration Date: February 28, 2024
-                    </div>
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Building2 className="w-4 h-4 mr-2" />
-                      Registration No: [To be added]
-                    </div>
-                  </div>
-                  <div className="mt-4 flex gap-2 justify-center">
-                    <button className="flex items-center px-3 py-1 text-sm bg-primary text-white rounded-md hover:bg-primary/90">
-                      <Eye className="w-4 h-4 mr-1" />
-                      View
-                    </button>
-                    <button className="flex items-center px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-                      <Download className="w-4 h-4 mr-1" />
-                      Download
-                    </button>
-                  </div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-8 h-8 text-green-600" />
+              <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Eye className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">12A Certificate</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Tax exemption certificate under Section 12A
+                  <h3 className="text-xl font-bold mb-4">Open Reporting</h3>
+                  <p className="text-muted-foreground">
+                    Regular progress reports and impact measurements available to all stakeholders
                   </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Valid From: [To be added]
-                    </div>
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Valid Until: [To be added]
-                    </div>
-                  </div>
-                  <div className="mt-4 flex gap-2 justify-center">
-                    <button className="flex items-center px-3 py-1 text-sm bg-primary text-white rounded-md hover:bg-primary/90">
-                      <Eye className="w-4 h-4 mr-1" />
-                      View
-                    </button>
-                    <button className="flex items-center px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-                      <Download className="w-4 h-4 mr-1" />
-                      Download
-                    </button>
-                  </div>
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-8 h-8 text-purple-600" />
+              <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-8">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">80G Certificate</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Donation tax benefits under Section 80G
+                  <h3 className="text-xl font-bold mb-4">Accountability</h3>
+                  <p className="text-muted-foreground">
+                    Clear policies, procedures, and governance structures ensure responsible operations
                   </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Valid From: [To be added]
-                    </div>
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Valid Until: [To be added]
-                    </div>
-                  </div>
-                  <div className="mt-4 flex gap-2 justify-center">
-                    <button className="flex items-center px-3 py-1 text-sm bg-primary text-white rounded-md hover:bg-primary/90">
-                      <Eye className="w-4 h-4 mr-1" />
-                      View
-                    </button>
-                    <button className="flex items-center px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-                      <Download className="w-4 h-4 mr-1" />
-                      Download
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Shield className="w-8 h-8 text-orange-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">FCRA Registration</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Foreign Contribution Regulation Act registration
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Registration Date: [To be added]
-                    </div>
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Building2 className="w-4 h-4 mr-2" />
-                      FCRA No: [To be added]
-                    </div>
-                  </div>
-                  <div className="mt-4 flex gap-2 justify-center">
-                    <button className="flex items-center px-3 py-1 text-sm bg-primary text-white rounded-md hover:bg-primary/90">
-                      <Eye className="w-4 h-4 mr-1" />
-                      View
-                    </button>
-                    <button className="flex items-center px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-                      <Download className="w-4 h-4 mr-1" />
-                      Download
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FileText className="w-8 h-8 text-red-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Audit Reports</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Annual financial audit reports
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Latest Report: [To be added]
-                    </div>
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <FileText className="w-4 h-4 mr-2" />
-                      Auditor: [To be added]
-                    </div>
-                  </div>
-                  <div className="mt-4 flex gap-2 justify-center">
-                    <button className="flex items-center px-3 py-1 text-sm bg-primary text-white rounded-md hover:bg-primary/90">
-                      <Eye className="w-4 h-4 mr-1" />
-                      View
-                    </button>
-                    <button className="flex items-center px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-                      <Download className="w-4 h-4 mr-1" />
-                      Download
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Award className="w-8 h-8 text-indigo-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Quality Certifications</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    ISO and other quality certifications
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Valid From: [To be added]
-                    </div>
-                    <div className="flex items-center justify-center text-sm text-muted-foreground">
-                      <Award className="w-4 h-4 mr-2" />
-                      Certification: [To be added]
-                    </div>
-                  </div>
-                  <div className="mt-4 flex gap-2 justify-center">
-                    <button className="flex items-center px-3 py-1 text-sm bg-primary text-white rounded-md hover:bg-primary/90">
-                      <Eye className="w-4 h-4 mr-1" />
-                      View
-                    </button>
-                    <button className="flex items-center px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
-                      <Download className="w-4 h-4 mr-1" />
-                      Download
-                    </button>
-                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -245,74 +95,72 @@ export default function TrustTransparencyPage() {
       {/* Financial Transparency */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-4">
-                Financial Transparency
-              </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-                Our Financial Reports
+                Financial Transparency
               </h2>
               <div className="w-24 h-1 bg-primary mx-auto mb-6" />
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Complete transparency in how we use your donations and funds.
-              </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid lg:grid-cols-2 gap-12">
+              {/* Annual Reports */}
               <Card>
-                <CardContent className="p-8">
-                  <div className="flex items-center mb-6">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                      <FileText className="w-6 h-6 text-green-600" />
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <FileText className="h-6 w-6 mr-2 text-primary" />
+                    Annual Reports
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Financial Statements</span>
+                      <Badge variant="outline">Available</Badge>
                     </div>
-                    <div>
-                      <h3 className="text-xl font-semibold">Annual Reports</h3>
-                      <p className="text-muted-foreground">Comprehensive yearly financial reports</p>
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Program Expenditure</span>
+                      <Badge variant="outline">Available</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Administrative Costs</span>
+                      <Badge variant="outline">Available</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Impact Reports</span>
+                      <Badge variant="outline">Available</Badge>
                     </div>
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm font-medium">2024 Annual Report</span>
-                      <span className="text-xs text-muted-foreground">Coming Soon</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm font-medium">2023 Annual Report</span>
-                      <span className="text-xs text-muted-foreground">Coming Soon</span>
-                    </div>
-                  </div>
-                  <button className="w-full mt-4 flex items-center justify-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90">
-                    <Download className="w-4 h-4 mr-2" />
-                    Download Reports
-                  </button>
                 </CardContent>
               </Card>
 
+              {/* Donation Tracking */}
               <Card>
-                <CardContent className="p-8">
-                  <div className="flex items-center mb-6">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                      <Shield className="w-6 h-6 text-blue-600" />
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart3 className="h-6 w-6 mr-2 text-primary" />
+                    Donation Tracking
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Real-time Tracking</span>
+                      <Badge variant="outline">Live</Badge>
                     </div>
-                    <div>
-                      <h3 className="text-xl font-semibold">Impact Reports</h3>
-                      <p className="text-muted-foreground">How your donations make a difference</p>
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Project Allocation</span>
+                      <Badge variant="outline">Transparent</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Fund Utilization</span>
+                      <Badge variant="outline">Regular Updates</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <span className="font-medium">Reporting System</span>
+                      <Badge variant="outline">Automated</Badge>
                     </div>
                   </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm font-medium">Q4 2024 Impact Report</span>
-                      <span className="text-xs text-muted-foreground">Coming Soon</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm font-medium">Q3 2024 Impact Report</span>
-                      <span className="text-xs text-muted-foreground">Coming Soon</span>
-                    </div>
-                  </div>
-                  <button className="w-full mt-4 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
-                    <Eye className="w-4 h-4 mr-2" />
-                    View Impact Reports
-                  </button>
                 </CardContent>
               </Card>
             </div>
@@ -320,77 +168,188 @@ export default function TrustTransparencyPage() {
         </div>
       </section>
 
-      {/* Awards & Recognition */}
+      {/* How We Use Your Donations */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-4">
-                Awards & Recognition
-              </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-                Our Achievements
+                How We Use Your Donations
               </h2>
               <div className="w-24 h-1 bg-primary mx-auto mb-6" />
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Recognition and awards that validate our commitment to social impact.
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                Every rupee you donate is carefully allocated to maximize impact across our key initiatives
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="text-center">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Pie Chart Visualization */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-center">Donation Distribution</CardTitle>
+                </CardHeader>
                 <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Award className="w-8 h-8 text-yellow-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Excellence in Education</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Award for outstanding contribution to education
-                  </p>
-                  <div className="text-xs text-muted-foreground">
-                    <div className="flex items-center justify-center mb-1">
-                      <Calendar className="w-3 h-3 mr-1" />
-                      2024
+                  <div className="h-80 flex items-center justify-center">
+                    <div className="w-64 h-64 relative">
+                      <div className="w-full h-full rounded-full relative overflow-hidden">
+                        <div className="absolute inset-0 rounded-full" style={{
+                          background: `conic-gradient(
+                            #f97316 0deg 144deg,
+                            #0891b2 144deg 230.4deg,
+                            #1f2937 230.4deg 302.4deg,
+                            #6b7280 302.4deg 360deg
+                          )`
+                        }}></div>
+                        <div className="absolute inset-8 bg-background rounded-full flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-primary">100%</div>
+                            <div className="text-sm text-muted-foreground">Transparent</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div>Gujarat State NGO Awards</div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="text-center">
-                <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Award className="w-8 h-8 text-green-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Community Impact</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Recognition for community development initiatives
+              {/* Distribution Breakdown */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+                    Direct Impact Allocation
+                  </h3>
+                  <p className="text-lg leading-relaxed mb-6">
+                    We maintain detailed records and provide regular updates on how your contributions 
+                    are making a difference in the communities we serve.
                   </p>
-                  <div className="text-xs text-muted-foreground">
-                    <div className="flex items-center justify-center mb-1">
-                      <Calendar className="w-3 h-3 mr-1" />
-                      2023
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#f97316' }}></div>
+                      <span className="font-medium">Education Programs</span>
                     </div>
-                    <div>Ahmedabad District Awards</div>
+                    <span className="font-bold text-lg">40%</span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#0891b2' }}></div>
+                      <span className="font-medium">Animal Welfare</span>
+                    </div>
+                    <span className="font-bold text-lg">25%</span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#1f2937' }}></div>
+                      <span className="font-medium">Elderly Care</span>
+                    </div>
+                    <span className="font-bold text-lg">20%</span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#6b7280' }}></div>
+                      <span className="font-medium">Environmental</span>
+                    </div>
+                    <span className="font-bold text-lg">15%</span>
+                  </div>
+                </div>
+
+                <div className="mt-8 p-4 bg-primary/10 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-bold text-lg">Administrative Costs</h4>
+                      <p className="text-sm text-muted-foreground">Essential operational expenses</p>
+                    </div>
+                    <span className="font-bold text-lg">10%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Governance */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+                Governance
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-6" />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Users className="h-6 w-6 mr-2 text-primary" />
+                    Board of Trustees
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-4">
+                    Our board consists of experienced professionals committed to our mission and ensuring proper governance.
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Amit Singh - Founder & Trustee</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Sunny Chaudhary - Chairman & Trustee</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Vandana Shukla - Trustee</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Manthan Kamle - Trustee</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Shubham Solanki - Trustee</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="text-center">
-                <CardContent className="p-6">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Award className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">Transparency Award</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Award for financial transparency and accountability
-                  </p>
-                  <div className="text-xs text-muted-foreground">
-                    <div className="flex items-center justify-center mb-1">
-                      <Calendar className="w-3 h-3 mr-1" />
-                      2023
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <FileText className="h-6 w-6 mr-2 text-primary" />
+                    Policies & Procedures
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Clear operational guidelines</span>
                     </div>
-                    <div>NGO Excellence Awards</div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Ethical fundraising practices</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Conflict of interest policies</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Whistleblower protection</span>
+                    </div>
+                    <div className="flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                      <span className="text-sm">Regular policy reviews</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -399,27 +358,111 @@ export default function TrustTransparencyPage() {
         </div>
       </section>
 
-      {/* Contact for Documents */}
+      {/* Impact Measurement */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+                Impact Measurement
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-6" />
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-6">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <TrendingUp className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">500+</h3>
+                  <p className="text-muted-foreground">Lives Impacted</p>
+                </CardContent>
+              </Card>
+
+              <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-6">
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Award className="h-8 w-8 text-red-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">200+</h3>
+                  <p className="text-muted-foreground">Animals Rescued</p>
+                </CardContent>
+              </Card>
+
+              <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-6">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Target className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">150+</h3>
+                  <p className="text-muted-foreground">Children Educated</p>
+                </CardContent>
+              </Card>
+
+              <Card className="text-center hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-6">
+                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <PieChart className="h-8 w-8 text-emerald-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2">1000+</h3>
+                  <p className="text-muted-foreground">Trees Planted</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact for Transparency */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <Card>
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+                Questions About Transparency?
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-6" />
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                For any questions about our transparency practices or to request specific information
+              </p>
+            </div>
+
+            <Card className="max-w-2xl mx-auto">
               <CardContent className="p-8">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <FileText className="w-8 h-8 text-primary" />
+                <div className="space-y-6">
+                  <div className="flex items-center">
+                    <Mail className="h-6 w-6 text-primary mr-4" />
+                    <div>
+                      <h3 className="font-bold">Email</h3>
+                      <p className="text-muted-foreground">transparency@gekct.org</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    <Phone className="h-6 w-6 text-primary mr-4" />
+                    <div>
+                      <h3 className="font-bold">Phone</h3>
+                      <p className="text-muted-foreground">+91 98765 43210</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center">
+                    <MapPin className="h-6 w-6 text-primary mr-4" />
+                    <div>
+                      <h3 className="font-bold">Address</h3>
+                      <p className="text-muted-foreground">
+                        207, Dwarkesh Complex, C.G. Road<br />
+                        Navrangpura, Ahmedabad, Gujarat 380001
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <h2 className="text-2xl font-bold mb-4">Need Specific Documents?</h2>
-                <p className="text-lg text-muted-foreground mb-6">
-                  If you need any specific legal documents, certificates, or reports that are not listed above, 
-                  please contact us and we'll be happy to provide them.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <button className="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90">
-                    Contact Us
-                  </button>
-                  <button className="px-6 py-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                    Request Documents
-                  </button>
+
+                <div className="mt-8 p-4 bg-primary/10 rounded-lg text-center">
+                  <p className="text-lg font-medium italic">
+                    "We believe that transparency builds trust, and trust enables us to create greater impact together."
+                  </p>
                 </div>
               </CardContent>
             </Card>
