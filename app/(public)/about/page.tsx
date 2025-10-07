@@ -1,4 +1,5 @@
 import { PublicLayout } from "@/components/public-layout"
+import { TeamSection } from "@/components/team-section"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Users, Heart, TreePine, GraduationCap, Shield, Target, BookOpen, Laptop, Briefcase, UserCheck, Leaf, Baby, Phone, Mail, MapPin } from "lucide-react"
@@ -288,90 +289,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Team Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-                Our Team
-              </h2>
-              <div className="w-24 h-1 bg-primary mx-auto mb-6" />
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                Meet the dedicated individuals who make our mission possible
-              </p>
-            </div>
-
-            {/* Board of Trustees */}
-            <div className="mb-16">
-              <h3 className="text-2xl font-bold text-center mb-8">Board of Trustees</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[
-                  { name: "Amit Singh", role: "Founder & Trustee" },
-                  { name: "Sunny Chaudhary", role: "Chairman & Trustee" },
-                  { name: "Vandana Shukla", role: "Trustee" },
-                  { name: "Manthan Kamle", role: "Trustee" },
-                  { name: "Shubham Solanki", role: "Trustee" }
-                ].map((member, index) => (
-                  <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
-                    <CardContent className="p-6">
-                      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <UserCheck className="h-10 w-10 text-primary" />
-                      </div>
-                      <h4 className="text-lg font-bold mb-2">{member.name}</h4>
-                      <p className="text-muted-foreground">{member.role}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Team Members */}
-            <div className="mb-16">
-              <h3 className="text-2xl font-bold text-center mb-8">Team Members</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[
-                  "Bharti Rajput", "Sarita Tiwari", "Baby Tiwari", 
-                  "Ronak Patel", "Preet Joshi", "Sahil Patel"
-                ].map((member, index) => (
-                  <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
-                    <CardContent className="p-6">
-                      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Users className="h-8 w-8 text-primary" />
-                      </div>
-                      <h4 className="text-lg font-bold mb-2">{member}</h4>
-                      <p className="text-muted-foreground">Team Member</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Volunteers */}
-            <div>
-              <h3 className="text-2xl font-bold text-center mb-8">Our Volunteers</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  "Swapnil Patel", "Sameer Shukla", "Raju Yadav", "Rajesh Pachalasa",
-                  "Rajesh Jadia", "Savankumar Patel", "Umang Pandya", "Preet Joshi",
-                  "Jeel Trivedi", "Sarthak Dhandhakiya", "Vikram Chaudhary", "Ankit Begusarai",
-                  "Alkesh Savkare", "Ajay Shikari", "Vivek Chaudhary", "Abhi Rai", "Vishal Bhai"
-                ].map((volunteer, index) => (
-                  <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
-                    <CardContent className="p-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <Heart className="h-6 w-6 text-primary" />
-                      </div>
-                      <h4 className="text-sm font-bold mb-1">{volunteer}</h4>
-                      <p className="text-xs text-muted-foreground">Volunteer</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Our Team Section - Dynamic */}
+      <TeamSection />
 
       {/* Contact Information */}
       <section className="py-20">
