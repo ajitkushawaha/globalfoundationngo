@@ -1,17 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { PublicLayout } from "@/components/public-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Heart,
-  BookOpen,
-  Utensils,
-  GraduationCap,
-  PawPrint,
-  Users,
+import { 
+  Heart, 
+  BookOpen, 
+  Utensils, 
+  GraduationCap, 
+  PawPrint, 
+  Users, 
   Target,
   CheckCircle,
   Plus,
@@ -22,6 +22,8 @@ import {
   Camera,
   Gift
 } from "lucide-react"
+import { DonationModal } from "@/components/donation-modal"
+import { loadRazorpayScript, createRazorpayOrder, openRazorpayPayment, formatDonationItems } from "@/lib/razorpay"
 
 interface DonationCategory {
   id: string
@@ -189,7 +191,7 @@ export default function DonatePage() {
 
   const handleProceedToDonate = () => {
     if (Object.keys(selectedItems).length === 0) {
-      alert('Please select at least one donation item.')
+      alert('Please select at least one item to donate')
       return
     }
     setShowDonationModal(true)
@@ -199,7 +201,20 @@ export default function DonatePage() {
     setIsProcessing(true)
     
     try {
-      // Prepare donation data
+      // Load Razorpay script
+      const razorpayLoaded = await loadRazorpayScript()
+      if (!razorpayLoaded) {
+        throw new Error('Failed to load payment gateway')
+      }
+
+      // Create order
+      const order = await createRazorpayOrder(totalAmount)
+      
+      if (!order) {
+        throw new Error('Failed to create payment order')
+      }
+
+      // Prepare donation items for the payment
       const donationItems = Object.entries(selectedItems).map(([categoryId, quantity]) => {
         const category = categoriesToUse.find(c => c.id === categoryId)
         return {
@@ -212,40 +227,64 @@ export default function DonatePage() {
         }
       })
 
-      // Submit donation data to API
-      const response = await fetch('/api/donations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // Open Razorpay payment
+      openRazorpayPayment({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        amount: totalAmount * 100, // Convert to paise
+        currency: 'INR',
+        name: 'GEKCT - Global Education & Charitable Trust',
+        description: `Donation for ${donationItems.length} item(s)`,
+        order_id: order.id,
+        prefill: {
+          name: donorData.name,
+          email: donorData.email,
+          contact: donorData.phone
         },
-        body: JSON.stringify({
-          donor: donorData,
-          items: donationItems,
-          totalAmount,
-          status: 'pending'
-        }),
+        notes: {
+          donor_message: donorData.message,
+          anonymous: donorData.anonymous.toString(),
+          donation_items: JSON.stringify(formatDonationItems(donationItems))
+        },
+        theme: {
+          color: '#3B82F6'
+        },
+        handler: async (response: any) => {
+          try {
+            // Verify payment
+            const verificationResponse = await fetch('/api/razorpay/verify-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                donationData: {
+                  ...donorData,
+                  items: donationItems,
+                  totalAmount
+                }
+              }),
+            })
+
+            if (verificationResponse.ok) {
+              // Redirect to success page
+              const successUrl = `/donation-success?payment_id=${response.razorpay_payment_id}&order_id=${response.razorpay_order_id}&amount=${totalAmount}`
+              window.location.href = successUrl
+            } else {
+              throw new Error('Payment verification failed')
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error)
+            alert('Payment verification failed. Please contact support.')
+          }
+        }
       })
 
-      if (response.ok) {
-        const result = await response.json()
-        if (result.success) {
-          // Show success message
-          alert('Thank you for your donation! We will contact you soon for payment details.')
-          
-          // Reset form
-          setSelectedItems({})
-          setTotalAmount(0)
-          setShowDonationModal(false)
-        } else {
-          throw new Error(result.error || 'Failed to submit donation')
-        }
-      } else {
-        throw new Error('Failed to submit donation')
-      }
-
     } catch (error) {
-      console.error('Donation error:', error)
-      alert('Failed to submit donation. Please try again or contact us directly.')
+      console.error('Payment error:', error)
+      alert('Payment failed. Please try again.')
     } finally {
       setIsProcessing(false)
       setShowDonationModal(false)
@@ -302,9 +341,9 @@ export default function DonatePage() {
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Users className="w-8 h-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">2. Submit Your Donation</h3>
+                  <h3 className="text-xl font-semibold mb-3">2. Track Progress</h3>
                   <p className="text-muted-foreground">
-                    Fill in your details and submit your donation. We'll contact you for payment details.
+                    See real-time progress as we collect donations from multiple people to reach our goals.
                   </p>
                 </CardContent>
               </Card>
@@ -423,8 +462,7 @@ export default function DonatePage() {
                     </CardContent>
                   </Card>
                 )
-                })
-              )}
+              })}
             </div>
           </div>
         </div>
@@ -472,7 +510,7 @@ export default function DonatePage() {
                       disabled={isProcessing}
                     >
                       <Gift className="w-4 h-4 mr-2" />
-                      {isProcessing ? 'Processing...' : 'Submit Donation'}
+                      {isProcessing ? 'Processing...' : 'Proceed to Donate'}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -600,86 +638,25 @@ export default function DonatePage() {
         </div>
       </section>
 
-      {/* Simple Donation Modal */}
-      {showDonationModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md">
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Donation Details</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Full Name *</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter your full name"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-1">Email *</label>
-                  <input
-                    type="email"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter your email"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-1">Phone Number *</label>
-                  <input
-                    type="tel"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter your phone number"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-1">Message (Optional)</label>
-                  <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    rows={3}
-                    placeholder="Any message you'd like to share..."
-                  />
-                </div>
-                
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="anonymous"
-                    className="mr-2"
-                  />
-                  <label htmlFor="anonymous" className="text-sm">Donate anonymously</label>
-                </div>
-              </div>
-              
-              <div className="mt-6 flex space-x-3">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setShowDonationModal(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="flex-1"
-                  onClick={() => {
-                    // Simple form submission
-                    alert('Thank you for your donation! We will contact you soon for payment details.')
-                    setShowDonationModal(false)
-                    setSelectedItems({})
-                    setTotalAmount(0)
-                  }}
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? 'Processing...' : 'Submit Donation'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      {/* Donation Modal */}
+      <DonationModal
+        isOpen={showDonationModal}
+        onClose={() => setShowDonationModal(false)}
+        donationItems={Object.entries(selectedItems).map(([categoryId, quantity]) => {
+          const category = categoriesToUse.find(c => c.id === categoryId)
+          return {
+            categoryId,
+            categoryName: category?.name || '',
+            unit: category?.unit || '',
+            quantity,
+            unitPrice: category?.unitPrice || 0,
+            total: (category?.unitPrice || 0) * quantity
+          }
+        })}
+        totalAmount={totalAmount}
+        onDonate={handleDonate}
+        loading={isProcessing}
+      />
     </PublicLayout>
   )
 }
