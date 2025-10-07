@@ -114,7 +114,7 @@ const BlogPostSchema = new Schema<IBlogPost>({
 })
 
 // Create index for better query performance
-BlogPostSchema.index({ slug: 1 })
+// Note: slug index is automatically created by unique: true
 BlogPostSchema.index({ published: 1, publishedAt: -1 })
 BlogPostSchema.index({ category: 1 })
 BlogPostSchema.index({ featured: 1 })

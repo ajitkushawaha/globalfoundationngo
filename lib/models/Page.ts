@@ -107,7 +107,7 @@ const PageSchema = new mongoose.Schema({
 })
 
 // Index for better performance
-PageSchema.index({ slug: 1 })
+// Note: slug index is automatically created by unique: true
 PageSchema.index({ status: 1 })
 PageSchema.index({ pageType: 1 })
 PageSchema.index({ showInNavigation: 1 })
