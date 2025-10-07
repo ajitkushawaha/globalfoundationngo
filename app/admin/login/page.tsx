@@ -10,7 +10,7 @@ import { Eye, EyeOff, Lock, User, Loader2 } from 'lucide-react'
 
 export default function AdminLoginPage() {
   const [formData, setFormData] = useState({
-    username: '',
+    email: '',
     password: ''
   })
   const [showPassword, setShowPassword] = useState(false)
@@ -34,21 +34,33 @@ export default function AdminLoginPage() {
     setError('')
 
     try {
-      // Simple hardcoded credentials for demo purposes
-      // In production, this should be handled by a proper authentication service
-      if (formData.username === 'admin' && formData.password === 'admin123') {
-        // Store login state in localStorage and cookies
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Store login state in localStorage
         localStorage.setItem('adminLoggedIn', 'true')
-        localStorage.setItem('adminUser', formData.username)
+        localStorage.setItem('adminUser', JSON.stringify(data.data.user))
+        localStorage.setItem('adminToken', data.data.token)
         
         // Set cookie for server-side authentication
         document.cookie = `adminLoggedIn=true; path=/; max-age=${7 * 24 * 60 * 60}` // 7 days
-        document.cookie = `adminUser=${formData.username}; path=/; max-age=${7 * 24 * 60 * 60}` // 7 days
+        document.cookie = `adminUser=${JSON.stringify(data.data.user)}; path=/; max-age=${7 * 24 * 60 * 60}` // 7 days
         
         // Redirect to admin dashboard
         router.push('/admin')
       } else {
-        setError('Invalid username or password')
+        setError(data.error || 'Invalid email or password')
       }
     } catch (err) {
       setError('An error occurred during login')
@@ -80,18 +92,18 @@ export default function AdminLoginPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Username Field */}
+              {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="email">Email</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    id="username"
-                    name="username"
-                    type="text"
-                    value={formData.username}
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
                     onChange={handleChange}
-                    placeholder="Enter your username"
+                    placeholder="Enter your email"
                     className="pl-10"
                     required
                     disabled={loading}
@@ -150,12 +162,14 @@ export default function AdminLoginPage() {
               </Button>
             </form>
 
-            {/* Demo Credentials */}
+            {/* Login Credentials */}
             <div className="mt-6 p-4 bg-blue-50 rounded-md">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">Demo Credentials:</h3>
-              <div className="text-sm text-blue-700">
-                <p><strong>Username:</strong> admin</p>
-                <p><strong>Password:</strong> admin123</p>
+              <h3 className="text-sm font-medium text-blue-900 mb-2">Available Accounts:</h3>
+              <div className="text-sm text-blue-700 space-y-1">
+                <p><strong>Admin:</strong> admin@gekct.org / admin123</p>
+                <p><strong>Amit:</strong> amit.singh@gekct.org / amit123</p>
+                <p><strong>Sunny:</strong> sunny.chaudhary@gekct.org / sunny123</p>
+                <p><strong>Editor:</strong> editor@gekct.org / editor123</p>
               </div>
             </div>
           </CardContent>

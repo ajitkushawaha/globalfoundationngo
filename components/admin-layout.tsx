@@ -15,18 +15,27 @@ interface AdminLayoutProps {
 export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [adminUser, setAdminUser] = useState('')
+  const [adminUser, setAdminUser] = useState<any>(null)
   const router = useRouter()
 
   useEffect(() => {
     // Check authentication status
     const checkAuth = () => {
       const loggedIn = localStorage.getItem('adminLoggedIn') === 'true'
-      const user = localStorage.getItem('adminUser') || ''
+      const userString = localStorage.getItem('adminUser') || ''
       
-      if (loggedIn) {
-        setIsAuthenticated(true)
-        setAdminUser(user)
+      if (loggedIn && userString) {
+        try {
+          const user = JSON.parse(userString)
+          setIsAuthenticated(true)
+          setAdminUser(user)
+        } catch (error) {
+          console.error('Error parsing user data:', error)
+          // Clear invalid data and redirect to login
+          localStorage.removeItem('adminLoggedIn')
+          localStorage.removeItem('adminUser')
+          router.push('/admin/login')
+        }
       } else {
         // Redirect to login if not authenticated
         router.push('/admin/login')
@@ -88,7 +97,14 @@ export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
                 </Link>
               </div>
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">Welcome, {adminUser}</span>
+                <span className="text-sm text-gray-600">
+                  Welcome, {adminUser?.name || 'Admin'}
+                  {adminUser?.role && (
+                    <span className="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                      {adminUser.role}
+                    </span>
+                  )}
+                </span>
                 <button
                   onClick={handleLogout}
                   className="flex items-center space-x-2 text-red-600 hover:text-red-800 text-sm"
