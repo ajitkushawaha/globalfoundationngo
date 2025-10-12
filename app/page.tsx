@@ -17,7 +17,6 @@ export default function Home() {
       <MissionVision />
       <Impact />
       <DonationTransparency />
-      <Initiatives />
       <Blog />
     </PublicLayout>
   )

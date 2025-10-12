@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Calendar, User, ArrowRight, Heart, GraduationCap, Users, TreePine, Loader2 } from "lucide-react"
+import { Calendar, User, ArrowRight, Heart, GraduationCap, Users, TreePine, Loader2, Eye } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import Link from "next/link"
@@ -25,6 +25,7 @@ interface BlogPost {
   videoTitle?: string
   featured: boolean
   slug: string
+  views?: number
 }
 
 const categoryIcons: { [key: string]: any } = {
@@ -54,7 +55,7 @@ export function Blog() {
     const fetchBlogPosts = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/blog?page=${currentPage}&limit=6`)
+        const response = await fetch(`/api/blog?page=${currentPage}&limit=6`, { cache: 'no-store' })
         const data = await response.json()
         
         if (data.success) {
@@ -77,7 +78,7 @@ export function Blog() {
   useEffect(() => {
     const fetchLatestPost = async () => {
       try {
-        const response = await fetch('/api/blog?limit=1')
+        const response = await fetch('/api/blog?limit=1', { cache: 'no-store' })
         const data = await response.json()
         
         if (data.success && data.data.length > 0) {
@@ -233,6 +234,10 @@ export function Blog() {
                       {post.category}
                     </span>
                     <span className="text-xs text-muted-foreground">{post.readTime}</span>
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Eye className="w-3 h-3 mr-1" />
+                      <span>{post.views || 0} Views</span>
+                    </div>
                   </div>
                   <h3 className="font-bold mb-3 leading-tight line-clamp-2" style={{ fontFamily: "var(--font-playfair)" }}>
                     {post.title}

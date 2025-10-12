@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { PublicLayout } from "@/components/public-layout"
+import { DonationModal } from "@/components/donation-modal"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -52,6 +53,7 @@ export default function DonatePage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [donationCategories, setDonationCategories] = useState<DonationCategory[]>([])
   const [loading, setLoading] = useState(true)
+  const [recentDonors, setRecentDonors] = useState<string[] | null>(null)
 
   // Load donation categories from API
   useEffect(() => {
@@ -72,6 +74,23 @@ export default function DonatePage() {
     }
 
     loadCategories()
+  }, [])
+
+  // Load recent donors (approved). Falls back to static list if API fails
+  useEffect(() => {
+    const loadDonors = async () => {
+      try {
+        const res = await fetch('/api/recent-donors?limit=12', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json()
+        if (data?.success && Array.isArray(data.data)) {
+          setRecentDonors(data.data.map((d: any) => d.name))
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    loadDonors()
   }, [])
 
   // Fallback categories if API fails
@@ -156,8 +175,16 @@ export default function DonatePage() {
     }
   ]
 
-  // Use dynamic categories or fallback
-  const categoriesToUse = donationCategories.length > 0 ? donationCategories : fallbackCategories
+  // Use dynamic categories or fallback, and normalize IDs to avoid undefined keys causing all items to increment together
+  const categoriesToUseRaw = donationCategories.length > 0 ? donationCategories : fallbackCategories
+  const categoriesToUse = categoriesToUseRaw.map((c, idx) => {
+    const slugFromName = c.name ? c.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : ''
+    const safeId = (c as any).slug?.trim?.()
+      || (c.id && String(c.id).trim().length > 0 && String(c.id))
+      || slugFromName
+      || `cat-${idx}`
+    return { ...c, id: safeId }
+  })
 
   const updateQuantity = (categoryId: string, change: number) => {
     setSelectedItems(prev => {
@@ -229,13 +256,11 @@ export default function DonatePage() {
       if (response.ok) {
         const result = await response.json()
         if (result.success) {
-          // Show success message
-          alert('Thank you for your donation! We will contact you soon for payment details.')
-          
-          // Reset form
-          setSelectedItems({})
-          setTotalAmount(0)
-          setShowDonationModal(false)
+          // Redirect to payment page with amount and donationId
+          const donationId = encodeURIComponent(result.donationId || '')
+          const amount = encodeURIComponent(String(totalAmount))
+          window.location.href = `/donate/payment?amount=${amount}&donationId=${donationId}`
+          return
         } else {
           throw new Error(result.error || 'Failed to submit donation')
         }
@@ -580,11 +605,11 @@ export default function DonatePage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-4">
-              {[
+              {(recentDonors || [
                 "Rajesh Patel", "Priya Sharma", "Amit Kumar", "Sunita Devi", 
                 "Vikram Singh", "Anita Joshi", "Rahul Mehta", "Kavita Patel",
                 "Anonymous", "Suresh Gupta", "Meera Shah", "Anonymous"
-              ].map((name, index) => (
+              ]).map((name, index) => (
                 <Card key={index} className="text-center">
                   <CardContent className="p-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -600,86 +625,25 @@ export default function DonatePage() {
         </div>
       </section>
 
-      {/* Simple Donation Modal */}
-      {showDonationModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <Card className="w-full max-w-md">
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Donation Details</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Full Name *</label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter your full name"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-1">Email *</label>
-                  <input
-                    type="email"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter your email"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-1">Phone Number *</label>
-                  <input
-                    type="tel"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    placeholder="Enter your phone number"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-1">Message (Optional)</label>
-                  <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    rows={3}
-                    placeholder="Any message you'd like to share..."
-                  />
-                </div>
-                
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="anonymous"
-                    className="mr-2"
-                  />
-                  <label htmlFor="anonymous" className="text-sm">Donate anonymously</label>
-                </div>
-              </div>
-              
-              <div className="mt-6 flex space-x-3">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => setShowDonationModal(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="flex-1"
-                  onClick={() => {
-                    // Simple form submission
-                    alert('Thank you for your donation! We will contact you soon for payment details.')
-                    setShowDonationModal(false)
-                    setSelectedItems({})
-                    setTotalAmount(0)
-                  }}
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? 'Processing...' : 'Submit Donation'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      {/* Donation Modal (reusable) */}
+      <DonationModal
+        isOpen={showDonationModal}
+        onClose={() => setShowDonationModal(false)}
+        donationItems={Object.entries(selectedItems).map(([categoryId, quantity]) => {
+          const category = categoriesToUse.find(c => c.id === categoryId)
+          return {
+            categoryId,
+            categoryName: category?.name || '',
+            unit: category?.unit || '',
+            quantity,
+            unitPrice: category?.unitPrice || 0,
+            total: (category?.unitPrice || 0) * quantity
+          }
+        })}
+        totalAmount={totalAmount}
+        onDonate={handleDonate}
+        loading={isProcessing}
+      />
     </PublicLayout>
   )
 }

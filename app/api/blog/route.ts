@@ -27,6 +27,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: [post] // Return as array for consistency
+      }, {
+        headers: {
+          'Cache-Control': 'no-store'
+        }
       })
     }
     
@@ -61,6 +65,10 @@ export async function GET(request: NextRequest) {
         limit,
         total,
         pages: Math.ceil(total / limit)
+      }
+    }, {
+      headers: {
+        'Cache-Control': 'no-store'
       }
     })
   } catch (error) {

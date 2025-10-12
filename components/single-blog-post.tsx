@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation"
 import { extractYouTubeVideoId, getYouTubeEmbedUrl } from "@/lib/youtube"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Calendar, User, ArrowLeft, Heart, GraduationCap, Users, TreePine, Loader2, Eye } from "lucide-react"
+import { Calendar, User, ArrowLeft, ArrowRight, Heart, GraduationCap, Users, TreePine, Loader2, Eye } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 interface BlogPost {
   _id: string
@@ -44,6 +45,8 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
   const [blogPost, setBlogPost] = useState<BlogPost | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [recentPosts, setRecentPosts] = useState<BlogPost[]>([])
+  const [recentLoading, setRecentLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
@@ -51,7 +54,7 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
       try {
         setLoading(true)
         console.log('Fetching blog post with slug:', slug)
-        const response = await fetch(`/api/blog?slug=${encodeURIComponent(slug)}`)
+        const response = await fetch(`/api/blog?slug=${encodeURIComponent(slug)}`, { cache: 'no-store' })
         console.log('Response status:', response.status)
         
         if (!response.ok) {
@@ -78,6 +81,27 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
     if (slug) {
       fetchBlogPost()
     }
+  }, [slug])
+
+  useEffect(() => {
+    const fetchRecent = async () => {
+      try {
+        setRecentLoading(true)
+        const res = await fetch(`/api/blog?limit=5`, { cache: 'no-store' })
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        if (data.success) {
+          const items: BlogPost[] = data.data || []
+          const filtered = items.filter((p) => p.slug !== slug)
+          setRecentPosts(filtered)
+        }
+      } catch (e) {
+        console.error('Error fetching recent posts:', e)
+      } finally {
+        setRecentLoading(false)
+      }
+    }
+    fetchRecent()
   }, [slug])
 
   const formatDate = (dateString: string) => {
@@ -188,7 +212,7 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
 
   return (
     <section className="py-2 bg-background ">
-      <div className="container max-w-4xl mx-auto">
+      <div className="container max-w-6xl mx-auto">
         {/* Back Button */}
         <div className="mb-8">
           <Button 
@@ -201,116 +225,225 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
           </Button>
         </div>
 
-        {/* Blog Post Header */}
-        <Card className="overflow-hidden mb-8">
-          <div className="aspect-video relative">
-            {blogPost.mediaType === 'video' && blogPost.videoUrl ? (
-              <iframe
-                src={getYouTubeEmbedUrl(extractYouTubeVideoId(blogPost.videoUrl) || '')}
-                title={blogPost.videoTitle || blogPost.title}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            ) : (
-              <>
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                  <IconComponent className="h-16 w-16 text-primary/60" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          {/* Main content */}
+          <div className="lg:col-span-2">
+            {/* Blog Post Header */}
+            <Card className="overflow-hidden mb-8">
+              <div className="aspect-video relative">
+                {blogPost.mediaType === 'video' && blogPost.videoUrl ? (
+                  <iframe
+                    src={getYouTubeEmbedUrl(extractYouTubeVideoId(blogPost.videoUrl) || '')}
+                    title={blogPost.videoTitle || blogPost.title}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                      <IconComponent className="h-16 w-16 text-primary/60" />
+                    </div>
+                    <Image
+                      src={blogPost.image}
+                      alt={blogPost.imageAlt || blogPost.title}
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  </>
+                )}
+              </div>
+              <CardContent className="p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full">
+                    {blogPost.category}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{blogPost.readTime}</span>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Eye className="w-4 h-4 mr-1" />
+                    <span>{blogPost.views} Views</span>
+                  </div>
                 </div>
-                <Image
-                  src={blogPost.image}
-                  alt={blogPost.imageAlt || blogPost.title}
-                  fill
-                  className="object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
+                
+                <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight" style={{ fontFamily: "var(--font-playfair)" }}>
+                  {blogPost.title}
+                </h1>
+                
+                <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
+                  {blogPost.excerpt}
+                </p>
+                
+                <div className="flex items-center justify-between border-t pt-6">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <User className="w-4 h-4 mr-2" />
+                    <span>{blogPost.author}</span>
+                    <Calendar className="w-4 h-4 ml-4 mr-2" />
+                    <span>{formatDate(blogPost.publishedAt)}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Blog Post Content */}
+            <Card className="mb-8">
+              <CardContent className="p-8">
+                <div 
+                  className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-primary prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground prose-h3:text-2xl prose-h3:font-bold prose-h3:text-foreground prose-h3:mb-4 prose-h3:mt-8 prose-h4:text-xl prose-h4:font-semibold prose-h4:text-foreground prose-h4:mb-3 prose-h4:mt-6 prose-p:leading-relaxed prose-p:mb-4 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:py-4 prose-blockquote:my-6 prose-blockquote:bg-primary/5 prose-blockquote:italic prose-blockquote:text-lg prose-blockquote:text-foreground prose-code:bg-secondary prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm prose-code:font-mono"
+                  dangerouslySetInnerHTML={{ 
+                    __html: formatContent(blogPost.content)
                   }}
                 />
-              </>
+              </CardContent>
+            </Card>
+
+            {/* Tags */}
+            {blogPost.tags && blogPost.tags.length > 0 && (
+              <Card className="mb-8">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Tags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {blogPost.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded-full"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             )}
+
+            {/* Call to Action */}
+            <Card className="bg-primary/5 border-primary/20">
+              <CardContent className="p-8 text-center">
+                <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+                  Make a Difference Today
+                </h3>
+                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                  Join us in creating positive change in our community. Your support helps us continue our mission and reach more people in need.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90">
+                    <Heart className="w-4 h-4 mr-2" />
+                    Donate Now
+                  </Button>
+                  <Button size="lg" variant="outline" onClick={() => router.push('/blog')}>
+                    Read More Stories
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-          <CardContent className="p-8">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full">
-                {blogPost.category}
-              </span>
-              <span className="text-sm text-muted-foreground">{blogPost.readTime}</span>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Eye className="w-4 h-4 mr-1" />
-                <span>{blogPost.views} views</span>
-              </div>
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight" style={{ fontFamily: "var(--font-playfair)" }}>
-              {blogPost.title}
-            </h1>
-            
-            <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
-              {blogPost.excerpt}
-            </p>
-            
-            <div className="flex items-center justify-between border-t pt-6">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <User className="w-4 h-4 mr-2" />
-                <span>{blogPost.author}</span>
-                <Calendar className="w-4 h-4 ml-4 mr-2" />
-                <span>{formatDate(blogPost.publishedAt)}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Blog Post Content */}
-        <Card className="mb-8">
-          <CardContent className="p-8">
-            <div 
-              className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-primary prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground prose-h3:text-2xl prose-h3:font-bold prose-h3:text-foreground prose-h3:mb-4 prose-h3:mt-8 prose-h4:text-xl prose-h4:font-semibold prose-h4:text-foreground prose-h4:mb-3 prose-h4:mt-6 prose-p:leading-relaxed prose-p:mb-4 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:py-4 prose-blockquote:my-6 prose-blockquote:bg-primary/5 prose-blockquote:italic prose-blockquote:text-lg prose-blockquote:text-foreground prose-code:bg-secondary prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm prose-code:font-mono"
-              dangerouslySetInnerHTML={{ 
-                __html: formatContent(blogPost.content)
-              }}
-            />
-          </CardContent>
-        </Card>
+          {/* Sidebar */}
+          <aside className="space-y-4 lg:sticky lg:top-24 self-start">
+            {/* Recent Stories */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>Recent Stories</h3>
+                {recentLoading ? (
+                  <div className="flex items-center text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin mr-2"/> Loading...</div>
+                ) : (
+                  <div className="space-y-4">
+                    {recentPosts.length === 0 && (
+                      <p className="text-sm text-muted-foreground">No recent stories available.</p>
+                    )}
+                    {recentPosts.map((post) => (
+                      <div key={post._id} className="flex items-center gap-3">
+                        <div className="relative w-20 h-16 rounded overflow-hidden flex-shrink-0">
+                          {post.mediaType === 'video' && post.videoUrl ? (
+                            <img
+                              src={`https://img.youtube.com/vi/${extractYouTubeVideoId(post.videoUrl) || ''}/hqdefault.jpg`}
+                              alt={post.videoTitle || post.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <>
+                              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                                {getCategoryIcon(post.category) && (
+                                  <span className="text-primary/60">
+                                    {/* icon placeholder to avoid SSR issues */}
+                                  </span>
+                                )}
+                              </div>
+                              <Image
+                                src={post.image}
+                                alt={post.imageAlt || post.title}
+                                fill
+                                className="object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            </>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <Link href={`/blog/${post.slug}`} className="block group">
+                            <p className="font-medium leading-snug group-hover:text-primary line-clamp-2">{post.title}</p>
+                          </Link>
+                          <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                            <span className="flex items-center"><Calendar className="w-3 h-3 mr-1" />{formatDate(post.publishedAt)}</span>
+                            <span className="flex items-center"><Eye className="w-3 h-3 mr-1" />{post.views || 0} Views</span>
+                            <span>{post.readTime}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
 
-        {/* Tags */}
-        {blogPost.tags && blogPost.tags.length > 0 && (
-          <Card className="mb-8">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {blogPost.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded-full"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                    <Link href="/blog">
+                      <Button variant="outline" size="sm" className="w-full mt-2">
+                        View all stories
+                        <ArrowRight className="w-3 h-3 ml-2" />
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
-        {/* Call to Action */}
-        <Card className="bg-primary/5 border-primary/20">
-          <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-              Make a Difference Today
-            </h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Join us in creating positive change in our community. Your support helps us continue our mission and reach more people in need.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
-                <Heart className="w-4 h-4 mr-2" />
-                Donate Now
-              </Button>
-              <Button size="lg" variant="outline" onClick={() => router.push('/blog')}>
-                Read More Stories
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Donor Spotlight */}
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>Donor Spotlight</h3>
+                <div className="space-y-6">
+                  {/* Recent Donors */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3 text-muted-foreground">Recent Donors</h4>
+                    <ul className="space-y-2">
+                      {[{ name: 'Rajesh Patel', time: '2h ago' }, { name: 'Priya Sharma', time: '5h ago' }, { name: 'Anonymous', time: '1d ago' }, { name: 'Amit Kumar', time: '2d ago' }].map((d, i) => (
+                        <li key={i} className="flex items-center justify-between text-sm">
+                          <span className="truncate">{d.name}</span>
+                          <span className="text-xs text-muted-foreground ml-3 flex-shrink-0">{d.time}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Most Frequent Donors */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3 text-muted-foreground">Most Frequent Donors</h4>
+                    <ul className="space-y-2">
+                      {[{ name: 'Kavita Patel', count: 7 }, { name: 'Rahul Mehta', count: 5 }, { name: 'Anonymous', count: 4 }].map((d, i) => (
+                        <li key={i} className="flex items-center justify-between text-sm">
+                          <span className="truncate">{d.name}</span>
+                          <span className="text-xs text-muted-foreground ml-3 flex-shrink-0">{d.count}x</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <Button variant="outline" size="sm" className="w-full">View donors</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </aside>
+        </div>
       </div>
     </section>
   )

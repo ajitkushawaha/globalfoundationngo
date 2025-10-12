@@ -19,6 +19,7 @@ export function Header() {
     { name: "Trust & Transparency", href: "/trust-transparency" },
     { name: "Contact", href: "/contact" },
     { name: "Donate", href: "/donate" },
+    { name: "Admin", href: "/admin/donations" },
   ]
 
   const isActive = (href: string) => {

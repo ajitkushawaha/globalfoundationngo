@@ -1,31 +1,167 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
+import Donation from '@/lib/models/Donation'
+import DonationCategory from '@/lib/models/DonationCategory'
 
+// POST: create a pending donation (no counters increment here)
 export async function POST(request: NextRequest) {
   try {
     await connectDB()
-    
+
     const body = await request.json()
-    
-    // For now, just log the donation data
-    console.log('New donation received:', body)
-    
-    // In a real implementation, you would:
-    // 1. Save the donation to the database
-    // 2. Send confirmation email to donor
-    // 3. Notify the organization
-    // 4. Generate a donation receipt
-    
-    return NextResponse.json({
-      success: true,
-      message: 'Donation submitted successfully',
-      donationId: `DON-${Date.now()}`
+    const items = Array.isArray(body?.items) ? body.items : []
+    const donor = body?.donor || {}
+    const totalAmount = Number(body?.totalAmount || 0)
+
+    // Helper: basic email validation
+    const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email)
+    const donorName = String(donor?.name || '').trim()
+    const donorEmailRaw = String(donor?.email || '').trim()
+    const donorEmail = donorEmailRaw.toLowerCase()
+
+    if (!items.length) {
+      return NextResponse.json({ success: false, error: 'No donation items' }, { status: 400 })
+    }
+    if (!donorName || !donorEmail) {
+      return NextResponse.json({ success: false, error: 'Donor name and email are required' }, { status: 400 })
+    }
+    if (!isValidEmail(donorEmail)) {
+      return NextResponse.json({ success: false, error: 'Invalid donor email address' }, { status: 400 })
+    }
+
+    const donationRef = `DON-${Date.now()}`
+
+    const doc = await Donation.create({
+      donor: {
+        name: donorName,
+        email: donorEmail,
+        phone: donor.phone ? String(donor.phone) : '',
+        message: donor.message ? String(donor.message) : '',
+        anonymous: !!donor.anonymous,
+      },
+      items: items.map((it: any) => ({
+        categoryId: String(it.categoryId),
+        categoryName: String(it.categoryName || ''),
+        unit: String(it.unit || ''),
+        unitPrice: Number(it.unitPrice || 0),
+        quantity: Number(it.quantity || 0),
+        total: Number(it.total || 0),
+      })),
+      totalAmount,
+      status: 'pending',
+      donationRef,
     })
+
+    console.log('New donation received (pending):', { donationRef, totalAmount, itemsCount: items.length })
+
+    return NextResponse.json({ success: true, message: 'Donation submitted successfully', donationId: donationRef })
   } catch (error) {
     console.error('Error processing donation:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to process donation' },
-      { status: 500 }
-    )
+    return NextResponse.json({ success: false, error: 'Failed to process donation' }, { status: 500 })
+  }
+}
+
+// GET: list donations (optionally by status)
+export async function GET(request: NextRequest) {
+  try {
+    await connectDB()
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status') || undefined
+    const limit = Math.min(Number(searchParams.get('limit') || 50), 100)
+
+    const filter: any = {}
+    if (status) filter.status = status
+
+    const donations = await Donation.find(filter).sort({ createdAt: -1 }).limit(limit).lean()
+    return NextResponse.json({ success: true, data: donations })
+  } catch (error) {
+    console.error('Error listing donations:', error)
+    return NextResponse.json({ success: false, error: 'Failed to fetch donations' }, { status: 500 })
+  }
+}
+
+// PATCH: approve or reject a donation
+export async function PATCH(request: NextRequest) {
+  try {
+    await connectDB()
+    const body = await request.json()
+    const { donationRef, action } = body || {}
+
+    if (!donationRef || !action) {
+      return NextResponse.json({ success: false, error: 'donationRef and action are required' }, { status: 400 })
+    }
+
+    const donation = await Donation.findOne({ donationRef })
+    if (!donation) return NextResponse.json({ success: false, error: 'Donation not found' }, { status: 404 })
+
+    if (action === 'approve') {
+      if (donation.status === 'approved') {
+        return NextResponse.json({ success: true, message: 'Already approved' })
+      }
+
+      // increment categories: currentFunded by quantity; donors +1 per category
+      const updates = donation.items.map(async (it: any) => {
+        const filter: any = { $or: [{ slug: it.categoryId }] }
+        // Also try ObjectId if matches
+        // We keep it simple: try slug match; if no doc updated, try by _id
+        let updated = await DonationCategory.findOneAndUpdate({ slug: it.categoryId }, { $inc: { currentFunded: it.quantity, donors: 1 } })
+        if (!updated) {
+          try {
+            updated = await DonationCategory.findOneAndUpdate({ _id: it.categoryId as any }, { $inc: { currentFunded: it.quantity, donors: 1 } })
+          } catch {}
+        }
+      })
+      await Promise.all(updates)
+
+      donation.status = 'approved'
+      donation.approvedAt = new Date()
+      await donation.save()
+
+      // best-effort email
+      try {
+        const { sendDonationEmail } = await import('@/lib/mail')
+        await sendDonationEmail({
+          to: donation.donor.email,
+          subject: 'Your donation has been received - Thank you!'
+        }, {
+          donorName: donation.donor.name,
+          donationRef: donation.donationRef,
+          totalAmount: donation.totalAmount,
+          status: 'approved'
+        })
+      } catch (e) {
+        console.warn('Email not sent:', e)
+      }
+
+      return NextResponse.json({ success: true, message: 'Donation approved' })
+    }
+
+    if (action === 'reject') {
+      donation.status = 'rejected'
+      await donation.save()
+
+      // best-effort email on rejection
+      try {
+        const { sendDonationEmail } = await import('@/lib/mail')
+        await sendDonationEmail({
+          to: donation.donor.email,
+          subject: 'Update on your donation request'
+        }, {
+          donorName: donation.donor.name,
+          donationRef: donation.donationRef,
+          totalAmount: donation.totalAmount,
+          status: 'rejected'
+        })
+      } catch (e) {
+        console.warn('Email not sent (reject):', e)
+      }
+
+      return NextResponse.json({ success: true, message: 'Donation rejected' })
+    }
+
+    return NextResponse.json({ success: false, error: 'Unknown action' }, { status: 400 })
+  } catch (error) {
+    console.error('Error updating donation:', error)
+    return NextResponse.json({ success: false, error: 'Failed to update donation' }, { status: 500 })
   }
 }

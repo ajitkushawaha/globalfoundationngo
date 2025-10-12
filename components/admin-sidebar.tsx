@@ -23,6 +23,7 @@ export function AdminSidebar({ sidebarOpen, setSidebarOpen }: AdminSidebarProps)
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: BarChart3, current: pathname === '/admin' },
+    { name: 'Donations', href: '/admin/donations', icon: Heart, current: pathname.startsWith('/admin/donations') },
     { name: 'Pages', href: '/admin/pages', icon: Globe, current: pathname.startsWith('/admin/pages') },
     { name: 'Blog Posts', href: '/admin/blog', icon: FileText, current: pathname.startsWith('/admin/blog') },
     { name: 'Team Members', href: '/admin/team-members', icon: Users, current: pathname.startsWith('/admin/team-members') },
@@ -34,8 +35,8 @@ export function AdminSidebar({ sidebarOpen, setSidebarOpen }: AdminSidebarProps)
 
   return (
     <>
-      {/* Desktop Sidebar - Sticky */}
-      <div className="hidden lg:block sticky top-0 h-screen w-64 bg-white shadow-lg">
+      {/* Desktop Sidebar - Fixed on desktop */}
+      <div className="hidden lg:block fixed left-0 top-0 z-50 h-screen w-64 bg-white shadow-lg">
         <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
           <h1 className="text-xl font-bold text-gray-900">GEKCT Admin</h1>
         </div>
