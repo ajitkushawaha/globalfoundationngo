@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     console.error('Error saving email settings:', error)
     return NextResponse.json({ 
       success: false, 
-      error: `Failed to save email settings: ${error.message}` 
+      error: `Failed to save email settings: ${error instanceof Error ? error.message : String(error)}` 
     }, { status: 500 })
   }
 }
@@ -85,7 +85,7 @@ export async function GET() {
     console.error('Error fetching email settings:', error)
     return NextResponse.json({ 
       success: false, 
-      error: `Failed to fetch email settings: ${error.message}` 
+      error: `Failed to fetch email settings: ${error instanceof Error ? error.message : String(error)}` 
     }, { status: 500 })
   }
 }

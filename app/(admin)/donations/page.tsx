@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle2, XCircle, AlertTriangle, RefreshCw } from 'lucide-react'
 import { AdminLayout } from '@/components/admin-layout'
+import { useToast, ToastContainer } from '@/components/ui/toast'
 
 interface DonationItem {
   categoryId: string
@@ -20,7 +21,7 @@ interface DonationDoc {
   totalAmount: number
   status: string
   createdAt: string
-  donor: { name: string; email: string; phone?: string; anonymous?: boolean }
+  donor: { name: string; email: string; phone?: string; anonymous?: boolean; message?: string }
   items: DonationItem[]
 }
 
@@ -29,7 +30,27 @@ export default function AdminDonationsPage() {
   const [approved, setApproved] = useState<DonationDoc[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [highlightedId, setHighlightedId] = useState<string | null>(null)
   const lastCount = useRef(0)
+  const { toasts, success, error: showError, removeToast } = useToast()
+
+  // Check for highlight parameter in URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const highlight = urlParams.get('highlight')
+      if (highlight) {
+        setHighlightedId(highlight)
+        // Remove highlight from URL after 5 seconds
+        setTimeout(() => {
+          setHighlightedId(null)
+          const newUrl = new URL(window.location.href)
+          newUrl.searchParams.delete('highlight')
+          window.history.replaceState({}, '', newUrl.toString())
+        }, 5000)
+      }
+    }
+  }, [])
 
   async function load() {
     try {
@@ -45,9 +66,9 @@ export default function AdminDonationsPage() {
 
       if (dataPending.success) {
         setPending(dataPending.data)
-        // simple alert when new donations arrive
+        // show toast when new donations arrive
         if (lastCount.current && dataPending.data.length > lastCount.current) {
-          alert('New donation received!')
+          success('New Donation Received', `${dataPending.data.length - lastCount.current} new donation(s) received`)
         }
         lastCount.current = dataPending.data.length
       } else {
@@ -85,11 +106,17 @@ export default function AdminDonationsPage() {
       await load()
       // notify other parts of the app (e.g., header) to refresh counts immediately
       try { window.dispatchEvent(new CustomEvent('donations:updated')) } catch {}
-      alert(action === 'approve' ? 'Donation approved and counters updated.' : 'Donation rejected.')
+      
+      if (action === 'approve') {
+        success('Donation Approved', 'Donation has been approved and donor notified')
+      } else {
+        success('Donation Rejected', 'Donation has been rejected')
+      }
     } else {
-      alert(data.error || 'Operation failed')
+      showError('Operation Failed', data.error || 'Failed to process donation')
     }
   }
+
 
   return (
     <AdminLayout title="Donations" subtitle="Review and approve incoming donations">
@@ -118,7 +145,10 @@ export default function AdminDonationsPage() {
           ) : (
             <div className="space-y-4">
               {pending.map((d) => (
-                <Card key={d.donationRef}>
+                <Card 
+                  key={d.donationRef} 
+                  className={highlightedId === d.donationRef ? 'ring-2 ring-blue-500 bg-blue-50' : ''}
+                >
                   <CardContent className="p-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                       <div>
@@ -178,6 +208,9 @@ export default function AdminDonationsPage() {
           )}
         </div>
       </section>
+      
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onClose={removeToast} />
     </AdminLayout>
   )
 }

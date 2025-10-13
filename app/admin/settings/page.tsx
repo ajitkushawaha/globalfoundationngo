@@ -17,6 +17,7 @@ interface EmailSettings {
   smtpPort: number
   smtpSecure: boolean
   smtpUser: string
+  smtpPassword: string
   fromEmail: string
   fromName: string
   adminNotificationEmails: string[]
@@ -34,6 +35,7 @@ export default function SettingsPage() {
     smtpPort: 587,
     smtpSecure: false,
     smtpUser: '',
+    smtpPassword: '',
     fromEmail: '',
     fromName: 'GEKCT Foundation',
     adminNotificationEmails: [],

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { connectDB } from '@/lib/mongodb'
+import connectDB from '@/lib/mongodb'
 import EmailSettings from '@/lib/models/EmailSettings'
 
 export async function POST(request: NextRequest) {
@@ -116,7 +116,7 @@ You can now use these settings to send donation notifications to donors and admi
     console.error('Email test failed:', error)
     return { 
       success: false, 
-      error: `Email test failed: ${error.message}` 
+      error: `Email test failed: ${error instanceof Error ? error.message : String(error)}` 
     }
   }
 }

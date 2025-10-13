@@ -47,14 +47,17 @@ export async function GET(request: NextRequest) {
       donorEmail: donation.donor.email,
       donationRef: donation.donationRef,
       totalAmount: donation.totalAmount,
-      status: 'approved',
+      status: 'approved' as const,
       items: donation.items,
       donorMessage: donation.donor.message,
       approvedAt: donation.approvedAt,
       createdAt: donation.createdAt
     }
 
-    await sendDonationEmail(donationData)
+    await sendDonationEmail({ 
+      to: donation.donor.email, 
+      subject: '🎉 Donation Received - Thank You for Your Support!' 
+    }, donationData)
 
     // Return HTML success page instead of JSON
     return new NextResponse(`
