@@ -24,7 +24,10 @@ import {
   EyeOff,
   Filter,
   Download,
-  Upload
+  Upload,
+  Check,
+  XCircle,
+  Clock
 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -143,6 +146,46 @@ export default function TeamMembersPage() {
       }
     } catch (error) {
       console.error('Error updating member status:', error)
+    }
+  }
+
+  const approveMember = async (id: string) => {
+    try {
+      const response = await fetch(`/api/team-members/${id}/approve`, {
+        method: 'POST'
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setTeamMembers(teamMembers.map(member => 
+            member._id === id ? { ...member, status: 'active', isPublic: true } : member
+          ))
+        }
+      }
+    } catch (error) {
+      console.error('Error approving member:', error)
+    }
+  }
+
+  const rejectMember = async (id: string) => {
+    if (!confirm('Are you sure you want to reject this team member request?')) return
+    
+    try {
+      const response = await fetch(`/api/team-members/${id}/reject`, {
+        method: 'POST'
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setTeamMembers(teamMembers.map(member => 
+            member._id === id ? { ...member, status: 'inactive', isPublic: false } : member
+          ))
+        }
+      }
+    } catch (error) {
+      console.error('Error rejecting member:', error)
     }
   }
 
@@ -269,7 +312,7 @@ export default function TeamMembersPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center">
@@ -288,6 +331,17 @@ export default function TeamMembersPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Active</p>
                 <p className="text-2xl font-bold">{teamMembers.filter(m => m.status === 'active').length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className={teamMembers.filter(m => m.status === 'pending').length > 0 ? 'ring-2 ring-yellow-400' : ''}>
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <Clock className="h-8 w-8 text-yellow-500" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Pending Requests</p>
+                <p className="text-2xl font-bold text-yellow-600">{teamMembers.filter(m => m.status === 'pending').length}</p>
               </div>
             </div>
           </CardContent>
@@ -422,35 +476,70 @@ export default function TeamMembersPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center justify-between pt-4 mt-4 border-t">
-                  <Link href={`/admin/team-members/${member._id}/edit`}>
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-3 w-3 mr-1" />
-                      Edit
-                    </Button>
-                  </Link>
-                  <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleMemberStatus(member._id, member.status)}
-                      className="text-blue-600 hover:text-blue-800"
-                      title={member.status === 'active' ? 'Deactivate' : 'Activate'}
-                    >
-                      {member.status === 'active' ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => deleteMember(member._id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-3 w-3 mr-1" />
-                    Delete
-                  </Button>
+                <div className="pt-4 mt-4 border-t">
+                  {member.status === 'pending' ? (
+                    <div className="space-y-3">
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Clock className="h-4 w-4 text-yellow-600" />
+                          <span className="text-sm font-medium text-yellow-800">Pending Approval</span>
+                        </div>
+                        <p className="text-xs text-yellow-700">
+                          This member is waiting for approval. Review their information and decide.
+                        </p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          onClick={() => approveMember(member._id)}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white flex-1"
+                        >
+                          <Check className="h-3 w-3 mr-1" />
+                          Approve
+                        </Button>
+                        <Button
+                          onClick={() => rejectMember(member._id)}
+                          size="sm"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 flex-1"
+                        >
+                          <XCircle className="h-3 w-3 mr-1" />
+                          Reject
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <Link href={`/admin/team-members/${member._id}/edit`}>
+                        <Button variant="outline" size="sm">
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleMemberStatus(member._id, member.status)}
+                        className="text-blue-600 hover:text-blue-800"
+                        title={member.status === 'active' ? 'Deactivate' : 'Activate'}
+                      >
+                        {member.status === 'active' ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => deleteMember(member._id)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

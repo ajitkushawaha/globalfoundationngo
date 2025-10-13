@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendDonationEmail } from '@/lib/mail'
 
+export const dynamic = 'force-dynamic'
+
 function isValidEmail(email: string) {
   return /\S+@\S+\.\S+/.test(email)
 }

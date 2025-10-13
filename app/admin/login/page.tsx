@@ -162,16 +162,6 @@ export default function AdminLoginPage() {
               </Button>
             </form>
 
-            {/* Login Credentials */}
-            <div className="mt-6 p-4 bg-blue-50 rounded-md">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">Available Accounts:</h3>
-              <div className="text-sm text-blue-700 space-y-1">
-                <p><strong>Admin:</strong> admin@gekct.org / admin123</p>
-                <p><strong>Amit:</strong> amit.singh@gekct.org / amit123</p>
-                <p><strong>Sunny:</strong> sunny.chaudhary@gekct.org / sunny123</p>
-                <p><strong>Editor:</strong> editor@gekct.org / editor123</p>
-              </div>
-            </div>
           </CardContent>
         </Card>
 

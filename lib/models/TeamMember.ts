@@ -16,6 +16,7 @@ export interface ITeamMember extends Document {
   status: 'active' | 'inactive' | 'pending' | 'suspended'
   joinDate: Date
   lastActive?: Date
+  age?: number
   socialLinks?: {
     instagram?: string
     linkedin?: string
@@ -38,6 +39,7 @@ export interface ITeamMember extends Document {
   notes?: string
   isPublic: boolean
   sortOrder: number
+  allowSocialMedia: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -126,6 +128,11 @@ const TeamMemberSchema = new Schema<ITeamMember>({
   lastActive: {
     type: Date
   },
+  age: {
+    type: Number,
+    min: [16, 'Age must be at least 16'],
+    max: [100, 'Age must be less than 100']
+  },
   socialLinks: {
     instagram: {
       type: String,
@@ -195,6 +202,10 @@ const TeamMemberSchema = new Schema<ITeamMember>({
   sortOrder: {
     type: Number,
     default: 0
+  },
+  allowSocialMedia: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

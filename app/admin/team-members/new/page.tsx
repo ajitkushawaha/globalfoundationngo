@@ -299,8 +299,11 @@ export default function NewTeamMemberPage() {
                     id="instagramLink"
                     value={formData.instagramLink}
                     onChange={(e) => handleInputChange('instagramLink', e.target.value)}
-                    placeholder="https://instagram.com/username"
+                    placeholder="https://instagram.com/username or @username"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Enter full URL or just username (e.g., @username)
+                  </p>
                 </div>
 
                 <ImageUpload

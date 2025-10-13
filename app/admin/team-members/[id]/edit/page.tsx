@@ -700,8 +700,11 @@ export default function EditTeamMemberPage() {
                         id="instagram"
                         value={formData.socialLinks.instagram}
                         onChange={(e) => handleSocialLinksChange('instagram', e.target.value)}
-                        placeholder="https://instagram.com/username"
+                        placeholder="https://instagram.com/username or @username"
                       />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Enter full URL or just username (e.g., @username)
+                      </p>
                     </div>
                   </div>
                 </CardContent>

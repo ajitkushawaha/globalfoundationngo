@@ -11,6 +11,7 @@ import Image from 'next/image'
 interface ImageUploadProps {
   value?: string
   onChange: (value: string) => void
+  onImageSelect?: (file: File) => void
   label?: string
   placeholder?: string
   className?: string
@@ -18,18 +19,23 @@ interface ImageUploadProps {
   acceptedTypes?: string[]
   showPreview?: boolean
   previewSize?: 'sm' | 'md' | 'lg'
+  folder?: string
+  uploading?: boolean
 }
 
 export function ImageUpload({
   value = '',
   onChange,
+  onImageSelect,
   label = 'Image',
   placeholder = 'Upload an image or enter URL',
   className = '',
   maxSize = 5, // 5MB default
   acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
   showPreview = true,
-  previewSize = 'md'
+  previewSize = 'md',
+  folder = 'general',
+  uploading = false
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -58,9 +64,14 @@ export function ImageUpload({
         throw new Error(`File size must be less than ${maxSize}MB`)
       }
 
-      // Convert to base64
-      const base64 = await fileToBase64(file)
-      onChange(base64)
+      // If onImageSelect is provided, use it for server upload
+      if (onImageSelect) {
+        onImageSelect(file)
+      } else {
+        // Otherwise, convert to base64
+        const base64 = await fileToBase64(file)
+        onChange(base64)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to process image')
     } finally {
@@ -148,7 +159,7 @@ export function ImageUpload({
       >
         <div className="text-center">
           <div className="mx-auto w-12 h-12 text-gray-400 mb-4">
-            {isUploading ? (
+            {(isUploading || uploading) ? (
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             ) : (
               <Upload className="h-12 w-12 mx-auto" />
@@ -156,7 +167,7 @@ export function ImageUpload({
           </div>
           
           <p className="text-sm text-gray-600 mb-2">
-            {isUploading ? 'Processing image...' : 'Drag & drop an image here, or click to select'}
+            {(isUploading || uploading) ? 'Processing image...' : 'Drag & drop an image here, or click to select'}
           </p>
           
           <Button
@@ -164,7 +175,7 @@ export function ImageUpload({
             variant="outline"
             size="sm"
             onClick={() => fileInputRef.current?.click()}
-            disabled={isUploading}
+            disabled={isUploading || uploading}
           >
             <Camera className="h-4 w-4 mr-2" />
             Choose File
@@ -188,7 +199,7 @@ export function ImageUpload({
           value={isUrl(value) ? value : ''}
           onChange={(e) => handleUrlChange(e.target.value)}
           placeholder="https://example.com/image.jpg"
-          disabled={isUploading}
+          disabled={isUploading || uploading}
         />
       </div>
 

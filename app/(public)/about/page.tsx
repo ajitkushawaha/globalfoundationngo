@@ -2,8 +2,10 @@ import { PublicLayout } from "@/components/public-layout"
 import { TeamSection } from "@/components/team-section"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users, Heart, TreePine, GraduationCap, Shield, Target, BookOpen, Laptop, Briefcase, UserCheck, Leaf, Baby, Phone, Mail, MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Users, Heart, TreePine, GraduationCap, Shield, Target, BookOpen, Laptop, Briefcase, UserCheck, Leaf, Baby, Phone, Mail, MapPin, ArrowRight } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -335,6 +337,95 @@ export default function AboutPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Join Us Section */}
+      <section className="py-20 bg-gradient-to-br from-primary/10 via-accent/5 to-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: "var(--font-playfair)" }}>
+              Join Our Mission
+            </h2>
+            <div className="w-24 h-1 bg-primary mx-auto mb-8" />
+            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+              Be part of something meaningful. Join our team of dedicated volunteers and team members 
+              working to create positive change in education, animal welfare, and community development.
+            </p>
+            
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              <Card className="text-left">
+                <CardContent className="p-8">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                      <Users className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Volunteer With Us</h3>
+                  </div>
+                  <p className="text-muted-foreground mb-6">
+                    Contribute your time and skills to our various programs. Whether you're passionate about 
+                    education, animal welfare, or community development, there's a place for you.
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-center">
+                      <Heart className="h-4 w-4 mr-2 text-primary" />
+                      Flexible time commitment
+                    </li>
+                    <li className="flex items-center">
+                      <Heart className="h-4 w-4 mr-2 text-primary" />
+                      Make a real difference
+                    </li>
+                    <li className="flex items-center">
+                      <Heart className="h-4 w-4 mr-2 text-primary" />
+                      Join a supportive community
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="text-left">
+                <CardContent className="p-8">
+                  <div className="flex items-center mb-4">
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                      <Briefcase className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Join Our Team</h3>
+                  </div>
+                  <p className="text-muted-foreground mb-6">
+                    Become a core team member and help shape our organization's future. We're looking for 
+                    dedicated individuals who share our vision and values.
+                  </p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-center">
+                      <Heart className="h-4 w-4 mr-2 text-primary" />
+                      Leadership opportunities
+                    </li>
+                    <li className="flex items-center">
+                      <Heart className="h-4 w-4 mr-2 text-primary" />
+                      Professional development
+                    </li>
+                    <li className="flex items-center">
+                      <Heart className="h-4 w-4 mr-2 text-primary" />
+                      Meaningful work experience
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="space-y-4">
+              <Link href="/join">
+                <Button size="lg" className="text-lg px-8 py-4">
+                  <Users className="h-5 w-5 mr-2" />
+                  Join Our Team
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+              <p className="text-sm text-muted-foreground">
+                Ready to make a difference? Fill out our application form and we'll get back to you soon.
+              </p>
+            </div>
           </div>
         </div>
       </section>

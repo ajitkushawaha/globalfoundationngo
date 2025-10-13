@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import Statistic from '@/lib/models/Statistic'
 
+export const dynamic = 'force-dynamic'
+
 // GET /api/statistics - Get all statistics
 export async function GET(request: NextRequest) {
   try {

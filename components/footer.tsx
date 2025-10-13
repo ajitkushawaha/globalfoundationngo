@@ -79,8 +79,18 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-background/80 hover:text-background transition-colors">
-                  Volunteer
+                <a href="/join" className="text-background/80 hover:text-background transition-colors">
+                  Join Us
+                </a>
+              </li>
+              <li>
+                <a href="/terms" className="text-background/80 hover:text-background transition-colors">
+                  Terms & Conditions
+                </a>
+              </li>
+              <li>
+                <a href="/privacy" className="text-background/80 hover:text-background transition-colors">
+                  Privacy Policy
                 </a>
               </li>
             </ul>
@@ -90,17 +100,20 @@ export function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
             <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span className="text-sm text-background/80">Ahmedabad, Gujarat, India</span>
+              <div className="flex items-start space-x-3">
+                <MapPin className="h-4 w-4 text-primary mt-0.5" />
+                <div className="text-sm text-background/80">
+                  <p>207, Dwarkesh Complex, C.G. Road, Navrangpura,</p>
+                  <p>Dist.: Ahmedabad, Gujarat, India</p>
+                </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-primary" />
-                <span className="text-sm text-background/80">+91 XXX XXX XXXX</span>
+                <span className="text-sm text-background/80">+91 9898098977</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-primary" />
-                <span className="text-sm text-background/80">info@gekct.org</span>
+                <span className="text-sm text-background/80">Support@globalfoundationngo.com</span>
               </div>
             </div>
 

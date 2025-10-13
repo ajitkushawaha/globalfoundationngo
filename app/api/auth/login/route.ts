@@ -4,10 +4,23 @@ import User from '@/lib/models/User'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+export const dynamic = 'force-dynamic'
  
 export async function POST(request: NextRequest) {
   try {
+    const JWT_SECRET = process.env.JWT_SECRET
+
+    if (!JWT_SECRET) {
+      if (process.env.NODE_ENV === 'production') {
+        return NextResponse.json(
+          { success: false, error: 'JWT_SECRET environment variable is required in production' },
+          { status: 500 }
+        )
+      }
+      // For development/build time, use a temporary secret
+      console.warn('JWT_SECRET not set, using temporary secret for build')
+    }
+
     await connectDB()
     
     const body = await request.json()
@@ -46,7 +59,7 @@ export async function POST(request: NextRequest) {
         email: user.email, 
         role: user.role 
       },
-      JWT_SECRET,
+      JWT_SECRET || 'temporary-build-secret',
       { expiresIn: '7d' }
     )
     
