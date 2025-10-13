@@ -24,6 +24,8 @@ export interface IDonation extends Document {
   status: 'pending' | 'approved' | 'rejected'
   donationRef: string
   approvedAt?: Date
+  bankVerified?: boolean
+  bankVerificationNotes?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -52,6 +54,8 @@ const DonationSchema = new Schema<IDonation>({
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending', index: true },
   donationRef: { type: String, required: true, unique: true, index: true },
   approvedAt: { type: Date },
+  bankVerified: { type: Boolean, default: false },
+  bankVerificationNotes: { type: String, trim: true },
 }, { timestamps: true })
 
 export default mongoose.models.Donation || mongoose.model<IDonation>('Donation', DonationSchema)

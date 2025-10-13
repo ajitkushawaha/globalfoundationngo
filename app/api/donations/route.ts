@@ -54,6 +54,16 @@ export async function POST(request: NextRequest) {
 
     console.log('New donation received (pending):', { donationRef, totalAmount, itemsCount: items.length })
 
+    // Send admin notification
+    try {
+      const { sendAdminNotification } = await import('@/lib/mail')
+      // Convert Mongoose document to plain object
+      const donationData = doc.toObject()
+      await sendAdminNotification(donationData)
+    } catch (e) {
+      console.warn('Admin notification not sent:', e)
+    }
+
     return NextResponse.json({ success: true, message: 'Donation submitted successfully', donationId: donationRef })
   } catch (error) {
     console.error('Error processing donation:', error)
@@ -122,12 +132,16 @@ export async function PATCH(request: NextRequest) {
         const { sendDonationEmail } = await import('@/lib/mail')
         await sendDonationEmail({
           to: donation.donor.email,
-          subject: 'Your donation has been received - Thank you!'
+          subject: '🎉 Donation Received - Thank You for Your Support!'
         }, {
           donorName: donation.donor.name,
           donationRef: donation.donationRef,
           totalAmount: donation.totalAmount,
-          status: 'approved'
+          status: 'approved',
+          items: donation.items,
+          donorMessage: donation.donor.message,
+          approvedAt: donation.approvedAt,
+          createdAt: donation.createdAt
         })
       } catch (e) {
         console.warn('Email not sent:', e)
@@ -145,12 +159,15 @@ export async function PATCH(request: NextRequest) {
         const { sendDonationEmail } = await import('@/lib/mail')
         await sendDonationEmail({
           to: donation.donor.email,
-          subject: 'Update on your donation request'
+          subject: 'Important Update: Your Donation Request'
         }, {
           donorName: donation.donor.name,
           donationRef: donation.donationRef,
           totalAmount: donation.totalAmount,
-          status: 'rejected'
+          status: 'rejected',
+          items: donation.items,
+          donorMessage: donation.donor.message,
+          createdAt: donation.createdAt
         })
       } catch (e) {
         console.warn('Email not sent (reject):', e)
@@ -159,9 +176,46 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ success: true, message: 'Donation rejected' })
     }
 
+    if (action === 'bank_verification') {
+      const { bankVerified, bankVerificationNotes } = body
+      
+      donation.bankVerified = bankVerified
+      if (bankVerificationNotes) {
+        donation.bankVerificationNotes = bankVerificationNotes
+      }
+      await donation.save()
+
+      return NextResponse.json({ success: true, message: 'Bank verification updated' })
+    }
+
     return NextResponse.json({ success: false, error: 'Unknown action' }, { status: 400 })
   } catch (error) {
     console.error('Error updating donation:', error)
     return NextResponse.json({ success: false, error: 'Failed to update donation' }, { status: 500 })
+  }
+}
+
+// DELETE: Clear all donations (admin only)
+export async function DELETE(request: NextRequest) {
+  try {
+    await connectDB()
+
+    // Delete all donations
+    const result = await Donation.deleteMany({})
+    
+    console.log(`🗑️ Deleted ${result.deletedCount} donations from database`)
+
+    return NextResponse.json({ 
+      success: true, 
+      message: `Successfully deleted ${result.deletedCount} donations`,
+      deletedCount: result.deletedCount
+    })
+
+  } catch (error) {
+    console.error('Error clearing donations:', error)
+    return NextResponse.json({ 
+      success: false, 
+      error: 'Failed to clear donations' 
+    }, { status: 500 })
   }
 }

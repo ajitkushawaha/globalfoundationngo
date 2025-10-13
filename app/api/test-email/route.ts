@@ -41,8 +41,27 @@ export async function GET(request: NextRequest) {
     }, {
       donorName: name,
       donationRef,
-      totalAmount: 0,
-      status: 'pending',
+      totalAmount: 2500.00,
+      status: 'approved',
+      items: [
+        {
+          categoryName: 'Education Support',
+          unit: 'months',
+          unitPrice: 1000.00,
+          quantity: 2,
+          total: 2000.00
+        },
+        {
+          categoryName: 'Medical Aid',
+          unit: 'patients',
+          unitPrice: 500.00,
+          quantity: 1,
+          total: 500.00
+        }
+      ],
+      donorMessage: 'Thank you for the amazing work you do in the community. I hope this helps make a difference!',
+      approvedAt: new Date(),
+      createdAt: new Date()
     })
 
     if (!result?.queued) {
