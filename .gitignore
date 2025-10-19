@@ -13,6 +13,10 @@
 /.next/
 /out/
 
+# webpack cache
+.next/cache/
+node_modules/.cache/
+
 # production
 /build
 
