@@ -55,17 +55,30 @@ export function Blog() {
     const fetchBlogPosts = async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/blog?page=${currentPage}&limit=6`, { cache: 'no-store' })
+        setError(null)
+        const response = await fetch(`/api/blog?page=${currentPage}&limit=6`, { 
+          cache: 'no-store',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
         const data = await response.json()
         
         if (data.success) {
-          setBlogPosts(data.data)
-          setPagination(data.pagination)
+          setBlogPosts(data.data || [])
+          setPagination(data.pagination || { page: 1, limit: 6, total: 0, pages: 1 })
         } else {
-          setError('Failed to fetch blog posts')
+          setError(data.error || 'Failed to fetch blog posts')
+          console.error('API Error:', data.error)
         }
       } catch (err) {
-        setError('Failed to fetch blog posts')
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch blog posts'
+        setError(errorMessage)
         console.error('Error fetching blog posts:', err)
       } finally {
         setLoading(false)
@@ -78,10 +91,20 @@ export function Blog() {
   useEffect(() => {
     const fetchLatestPost = async () => {
       try {
-        const response = await fetch('/api/blog?limit=1', { cache: 'no-store' })
+        const response = await fetch('/api/blog?limit=1', { 
+          cache: 'no-store',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
         const data = await response.json()
         
-        if (data.success && data.data.length > 0) {
+        if (data.success && data.data && data.data.length > 0) {
           setLatestPost(data.data[0])
         }
       } catch (err) {

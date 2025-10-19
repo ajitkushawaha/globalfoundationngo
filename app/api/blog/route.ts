@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import BlogPost from '@/lib/models/BlogPost'
 
+export const dynamic = 'force-dynamic'
+
 // GET /api/blog - Get all blog posts or single post by slug
 export async function GET(request: NextRequest) {
   try {

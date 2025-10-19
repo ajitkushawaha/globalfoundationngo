@@ -94,4 +94,32 @@ export async function PUT(
   }
 }
 
-// DELETE endpoint removed - Pages cannot be deleted
+// DELETE /api/pages/[id] - Delete page
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectToDatabase()
+    
+    const page = await Page.findByIdAndDelete(params.id)
+    
+    if (!page) {
+      return NextResponse.json(
+        { success: false, error: 'Page not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Page deleted successfully'
+    })
+  } catch (error) {
+    console.error('Error deleting page:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete page' },
+      { status: 500 }
+    )
+  }
+}
