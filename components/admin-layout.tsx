@@ -18,12 +18,19 @@ export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
   const [adminUser, setAdminUser] = useState<any>(null)
   const [pendingCount, setPendingCount] = useState<number>(0)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const profileRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     // Check authentication status
     const checkAuth = () => {
+      // Check if we're on the client side
+      if (typeof window === 'undefined') {
+        setIsLoading(false)
+        return
+      }
+      
       const loggedIn = localStorage.getItem('adminLoggedIn') === 'true'
       const userString = localStorage.getItem('adminUser') || ''
       
@@ -37,12 +44,17 @@ export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
           // Clear invalid data and redirect to login
           localStorage.removeItem('adminLoggedIn')
           localStorage.removeItem('adminUser')
+          localStorage.removeItem('adminToken')
           router.push('/admin/login')
         }
       } else {
-        // Redirect to login if not authenticated
-        router.push('/admin/login')
+        // Only redirect if we're not already on the login page
+        if (window.location.pathname !== '/admin/login') {
+          router.push('/admin/login')
+        }
       }
+      
+      setIsLoading(false)
     }
 
     checkAuth()
@@ -109,13 +121,15 @@ export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
 
   const goToDonations = () => router.push('/admin/donations')
 
-  // Show loading or redirect if not authenticated
-  if (!isAuthenticated) {
+  // Show loading screen while checking authentication
+  if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Checking authentication...</p>
+          <p className="mt-4 text-gray-600">
+            {isLoading ? 'Loading...' : 'Checking authentication...'}
+          </p>
         </div>
       </div>
     )

@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { SankeyChart } from "@/components/ui/sankey-chart"
+import { DonutChart } from "@/components/ui/donut-chart"
 import { useEffect, useState } from "react"
 
 interface DonationCategory {
@@ -43,43 +43,28 @@ export function DonationTransparency() {
     fetchCategories()
   }, [])
 
-  function generateSankeyData(categories: DonationCategory[]) {
+  function generateDonutData(categories: DonationCategory[]) {
     if (categories.length === 0) {
-      return { nodes: [], links: [] }
+      return []
     }
 
     // Calculate total donations
     const totalDonations = categories.reduce((sum, cat) => sum + (cat.currentFunded * cat.unitPrice), 0)
 
-    // Create nodes with required properties
-    const nodes = [
-      { 
-        id: "Donations", 
-        name: "Total Donations", 
-        color: "#FF8C00",
-        percentage: 100
-      },
-      ...categories.map(cat => {
-        const value = cat.currentFunded * cat.unitPrice
-        const percentage = totalDonations > 0 ? (value / totalDonations) * 100 : 0
-        return {
-          id: cat.slug,
-          name: cat.name.length > 12 ? cat.name.substring(0, 12) + "..." : cat.name,
-          color: cat.color || "#3B82F6",
-          percentage: Math.round(percentage * 100) / 100
-        }
-      })
-    ]
+    if (totalDonations === 0) {
+      return []
+    }
 
-    // Create links with required properties
-    const links = categories.map(cat => ({
-      source: "Donations",
-      target: cat.slug,
-      value: cat.currentFunded * cat.unitPrice,
-      color: cat.color || "#3B82F6"
-    }))
-
-    return { nodes, links }
+    // Create donut chart data
+    return categories.map(cat => {
+      const value = cat.currentFunded * cat.unitPrice
+      const percentage = totalDonations > 0 ? (value / totalDonations) * 100 : 0
+      return {
+        category: cat.name.length > 20 ? cat.name.substring(0, 20) + "..." : cat.name,
+        percentage: Math.round(percentage * 100) / 100,
+        color: cat.color || "#3B82F6"
+      }
+    }).filter(item => item.percentage > 0) // Only show categories with donations
   }
 
   if (loading) {
@@ -107,7 +92,7 @@ export function DonationTransparency() {
     )
   }
 
-  const sankeyData = generateSankeyData(categories)
+  const donutData = generateDonutData(categories)
 
   return (
     <section className="py-20 bg-muted/30">
@@ -123,20 +108,70 @@ export function DonationTransparency() {
             </p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-center">Donation Distribution</CardTitle>
-            </CardHeader>
-            <CardContent className="p-8">
-              {sankeyData.nodes.length > 0 ? (
-                <SankeyChart data={sankeyData} />
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No donation data available
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Donut Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">Donation Distribution</CardTitle>
+              </CardHeader>
+              <CardContent className="p-8">
+                {donutData.length > 0 ? (
+                  <DonutChart data={donutData} size={300} strokeWidth={25} />
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <div className="text-4xl mb-4">💰</div>
+                    <p className="text-lg font-medium mb-2">No donations yet</p>
+                    <p className="text-sm">Be the first to make a difference!</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Statistics */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">Impact Statistics</CardTitle>
+              </CardHeader>
+              <CardContent className="p-8">
+                {donutData.length > 0 ? (
+                  <div className="space-y-6">
+                    {donutData.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div 
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: item.color }}
+                          />
+                          <span className="font-medium">{item.category}</span>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold">{item.percentage}%</div>
+                          <div className="text-sm text-muted-foreground">of total</div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    <div className="pt-4 border-t">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold">Total Categories:</span>
+                        <span className="text-lg font-bold">{categories.length}</span>
+                      </div>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="font-semibold">Active Categories:</span>
+                        <span className="text-lg font-bold text-green-600">{donutData.length}</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <div className="text-4xl mb-4">📊</div>
+                    <p className="text-lg font-medium mb-2">No data to display</p>
+                    <p className="text-sm">Statistics will appear when donations are made</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Description and CTA */}
           <div className="text-center mt-12 pt-8">
