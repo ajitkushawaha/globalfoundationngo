@@ -207,7 +207,7 @@ const TeamMemberSchema = new Schema<ITeamMember>({
 })
 
 // Indexes for better query performance
-TeamMemberSchema.index({ email: 1 })
+// Note: email index is already created by unique: true in schema
 TeamMemberSchema.index({ joinAs: 1 })
 TeamMemberSchema.index({ status: 1 })
 TeamMemberSchema.index({ isPublic: 1 })
