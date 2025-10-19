@@ -25,7 +25,6 @@ interface FormData {
   joinAs: 'team' | 'volunteer' | 'board_member' | 'advisor'
   age: string
   address: string
-  bio: string
   skills: string[]
   availability: 'full_time' | 'part_time' | 'weekends' | 'evenings' | 'flexible'
   emergencyContact: {
@@ -72,7 +71,6 @@ export function JoinForm() {
     joinAs: 'volunteer',
     age: '',
     address: '',
-    bio: '',
     skills: [],
     availability: 'flexible',
     emergencyContact: {
@@ -371,33 +369,23 @@ export function JoinForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="instagramLink">Instagram Link</Label>
+                <Label htmlFor="instagramLink">Instagram ID</Label>
                 <div className="relative">
                   <Instagram className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="instagramLink"
                     value={formData.instagramLink}
                     onChange={(e) => handleInputChange('instagramLink', e.target.value)}
-                    placeholder="https://instagram.com/username or @username"
+                    placeholder="@username"
                     className="pl-10"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Enter your full Instagram URL or just your username (e.g., @username)
+                  Enter your username (e.g., @username)
                 </p>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={formData.bio}
-                onChange={(e) => handleInputChange('bio', e.target.value)}
-                placeholder="Tell us about yourself, your interests, and why you want to join our team"
-                rows={4}
-              />
-            </div>
           </div>
 
           {/* Skills */}

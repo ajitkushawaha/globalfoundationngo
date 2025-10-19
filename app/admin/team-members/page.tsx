@@ -42,7 +42,6 @@ interface TeamMember {
   joinAs: 'team' | 'volunteer' | 'board_member' | 'advisor'
   role?: string
   department?: string
-  bio?: string
   skills: string[]
   availability: 'full_time' | 'part_time' | 'weekends' | 'evenings' | 'flexible'
   status: 'active' | 'inactive' | 'pending' | 'suspended'
@@ -469,10 +468,6 @@ export default function TeamMembersPage() {
                     </div>
                   )}
 
-                  {/* Bio */}
-                  {member.bio && (
-                    <p className="text-sm text-gray-600 line-clamp-2">{member.bio}</p>
-                  )}
                 </div>
 
                 {/* Actions */}

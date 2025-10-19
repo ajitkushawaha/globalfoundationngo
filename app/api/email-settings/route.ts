@@ -54,6 +54,7 @@ export async function POST(request: NextRequest) {
       donationApprovedSubject,
       donationRejectedSubject,
       adminNotificationSubject,
+      volunteerConfirmationSubject,
       createdBy
     } = body
 
@@ -84,6 +85,7 @@ export async function POST(request: NextRequest) {
       donationApprovedSubject: donationApprovedSubject || '🎉 Donation Received - Thank You for Your Support!',
       donationRejectedSubject: donationRejectedSubject || 'Important Update: Your Donation Request',
       adminNotificationSubject: adminNotificationSubject || '🔔 New Donation Received - Action Required',
+      volunteerConfirmationSubject: volunteerConfirmationSubject || '🎉 Welcome to GEKCT - Volunteer Application Received!',
       createdBy
     })
 

@@ -24,7 +24,6 @@ interface FormData {
   joinAs: 'team' | 'volunteer' | 'board_member' | 'advisor'
   role: string
   department: string
-  bio: string
   skills: string[]
   availability: 'full_time' | 'part_time' | 'weekends' | 'evenings' | 'flexible'
   status: 'active' | 'inactive' | 'pending' | 'suspended'
@@ -72,7 +71,6 @@ export default function NewTeamMemberPage() {
     joinAs: 'volunteer',
     role: '',
     department: '',
-    bio: '',
     skills: [],
     availability: 'flexible',
     status: 'pending',
@@ -316,16 +314,6 @@ export default function NewTeamMemberPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  value={formData.bio}
-                  onChange={(e) => handleInputChange('bio', e.target.value)}
-                  placeholder="Tell us about this person..."
-                  rows={3}
-                />
-              </div>
             </CardContent>
           </Card>
 

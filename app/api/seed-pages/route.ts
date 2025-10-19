@@ -102,19 +102,6 @@ At Global Education and Charitable Trust, we believe that transparency and accou
 
 We are committed to maintaining the highest standards of transparency in all our operations, ensuring that every donation and resource is used effectively and ethically.
 
-## Financial Transparency
-
-### Annual Reports
-- Detailed financial statements
-- Program expenditure breakdown
-- Administrative cost analysis
-- Impact measurement reports
-
-### Donation Tracking
-- Real-time donation tracking
-- Project-specific funding allocation
-- Regular updates on fund utilization
-- Transparent reporting system
 
 ## Governance
 

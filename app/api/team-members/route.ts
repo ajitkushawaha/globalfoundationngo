@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import TeamMember from '@/lib/models/TeamMember'
+import { sendVolunteerConfirmationEmail } from '@/lib/mail'
 
 export const dynamic = 'force-dynamic'
 
@@ -95,6 +96,34 @@ export async function POST(request: NextRequest) {
     
     const teamMember = new TeamMember(body)
     await teamMember.save()
+    
+    // Send confirmation email to volunteer
+    try {
+      // Get email settings for subject
+      const EmailSettings = (await import('@/lib/models/EmailSettings')).default
+      const emailSettings = await EmailSettings.findOne({ isActive: true })
+      const subject = emailSettings?.volunteerConfirmationSubject || '🎉 Welcome to GEKCT - Volunteer Application Received!'
+      
+      const emailResult = await sendVolunteerConfirmationEmail(
+        {
+          to: teamMember.email,
+          subject: subject
+        },
+        {
+          fullName: teamMember.fullName,
+          email: teamMember.email,
+          joinAs: teamMember.joinAs,
+          profession: teamMember.profession,
+          applicationDate: new Date(),
+          applicationId: teamMember._id.toString()
+        }
+      )
+      
+      console.log('Volunteer confirmation email result:', emailResult)
+    } catch (emailError) {
+      console.error('Failed to send volunteer confirmation email:', emailError)
+      // Don't fail the request if email fails
+    }
     
     return NextResponse.json({
       success: true,

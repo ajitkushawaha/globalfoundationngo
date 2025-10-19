@@ -17,7 +17,6 @@ interface TeamMember {
   joinAs: 'team' | 'volunteer' | 'board_member' | 'advisor'
   role?: string
   department?: string
-  bio?: string
   skills?: string[]
   status: 'active' | 'inactive' | 'pending' | 'suspended'
   socialLinks?: {

@@ -37,7 +37,7 @@ export function Header() {
               <img src="/gkct.jpg" alt="GEKCT" className="rounded-full" />
             </div>
             <div>
-              <h1 className="text-lg font-bold">GEKCT</h1>
+              <h1 className="text-lg font-bold">GECT</h1>
               <p className="text-xs text-muted-foreground">Global Education & Charitable Trust</p>
             </div>
           </Link>

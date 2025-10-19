@@ -21,6 +21,15 @@ interface TemplateData {
   createdAt?: Date
 }
 
+interface VolunteerConfirmationData {
+  fullName: string
+  email: string
+  joinAs: string
+  profession: string
+  applicationDate: Date
+  applicationId: string
+}
+
 export async function sendDonationEmail(opts: SendOptions, data: TemplateData) {
   // Try to get admin-configured email settings first
   let emailSettings = null
@@ -576,4 +585,245 @@ function renderHtml(data: TemplateData) {
 
 function escapeHtml(str: string) {
   return String(str).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'} as any)[c])
+}
+
+export async function sendVolunteerConfirmationEmail(opts: SendOptions, data: VolunteerConfirmationData) {
+  // Try to get admin-configured email settings first
+  let emailSettings = null
+  try {
+    const connectDB = (await import('@/lib/mongodb')).default
+    const EmailSettings = (await import('@/lib/models/EmailSettings')).default
+    await connectDB()
+    emailSettings = await EmailSettings.findOne({ isActive: true })
+  } catch (error) {
+    console.warn('Could not load admin email settings, falling back to environment variables')
+  }
+
+  let from, host, port, secure, user, pass
+
+  if (emailSettings) {
+    // Use admin-configured settings
+    from = `"${emailSettings.fromName}" <${emailSettings.fromEmail}>`
+    host = emailSettings.smtpHost
+    port = emailSettings.smtpPort
+    secure = emailSettings.smtpSecure
+    user = emailSettings.smtpUser
+    pass = emailSettings.smtpPassword
+  } else {
+    // Fallback to environment variables
+    const hasSmtp = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS)
+    const hasEmail = !!(process.env.EMAIL_USER && process.env.EMAIL_PASS)
+
+    from = process.env.MAIL_FROM || process.env.SMTP_FROM || process.env.EMAIL_FROM || process.env.EMAIL_USER || 'no-reply@example.com'
+    host = hasSmtp ? process.env.SMTP_HOST! : (hasEmail ? 'smtp.gmail.com' : undefined)
+    port = hasSmtp ? Number(process.env.SMTP_PORT || 587) : (hasEmail ? 465 : undefined)
+    secure = hasSmtp ? Boolean(process.env.SMTP_SECURE === 'true') : (hasEmail ? true : false)
+    user = hasSmtp ? process.env.SMTP_USER! : (hasEmail ? process.env.EMAIL_USER! : undefined)
+    pass = hasSmtp ? process.env.SMTP_PASS! : (hasEmail ? process.env.EMAIL_PASS! : undefined)
+  }
+
+  // If neither is configured, log and exit gracefully
+  if (!host || !user || !pass) {
+    console.log('[mail] SMTP not configured. Would send volunteer confirmation email:', {
+      to: opts.to,
+      subject: opts.subject,
+      from,
+      preview: renderVolunteerConfirmationText(data)
+    })
+    return { queued: false, reason: 'smtp_not_configured' }
+  }
+
+  // Load nodemailer at runtime without forcing bundler to resolve it
+  const nodemailer = await import('nodemailer')
+  
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: { user, pass }
+  })
+
+  const html = renderVolunteerConfirmationHtml(data)
+  const text = renderVolunteerConfirmationText(data)
+
+  try {
+    const info = await transporter.sendMail({
+      from,
+      to: opts.to,
+      subject: opts.subject,
+      text,
+      html
+    })
+
+    console.log('[mail] Volunteer confirmation email sent:', info.messageId)
+    return { queued: true, messageId: info.messageId }
+  } catch (error) {
+    console.error('[mail] Failed to send volunteer confirmation email:', error)
+    return { queued: false, reason: 'send_failed', error: error instanceof Error ? error.message : String(error) }
+  }
+}
+
+function renderVolunteerConfirmationText(data: VolunteerConfirmationData) {
+  return `
+🎉 Welcome to GEKCT - Volunteer Application Received!
+
+Dear ${data.fullName},
+
+Thank you for your interest in joining Global Education and Charitable Trust (GEKCT) as a ${data.joinAs}!
+
+Your application has been successfully submitted and is currently under review.
+
+Application Details:
+- Name: ${data.fullName}
+- Email: ${data.email}
+- Position: ${data.joinAs}
+- Profession: ${data.profession}
+- Application Date: ${data.applicationDate.toLocaleDateString()}
+- Application ID: ${data.applicationId}
+
+What happens next?
+1. Our team will review your application
+2. We'll contact you within 3-5 business days
+3. If approved, you'll receive further instructions
+
+We appreciate your commitment to making a difference in our community!
+
+Best regards,
+GEKCT Team
+
+---
+Global Education and Charitable Trust
+Website: www.gekct.org
+Email: support@globalfoundationngo.com
+Phone: +91 9898098977
+  `.trim()
+}
+
+function renderVolunteerConfirmationHtml(data: VolunteerConfirmationData) {
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Application Confirmation</title>
+  </head>
+  <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+      <!-- Header -->
+      <div style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); padding: 32px 24px; text-align: center;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">
+          🎉 Welcome to GEKCT!
+        </h1>
+        <p style="color: #fef3c7; margin: 8px 0 0 0; font-size: 16px;">
+          Volunteer Application Received
+        </p>
+      </div>
+
+      <!-- Main Content -->
+      <div style="padding: 32px 24px;">
+        <div style="margin-bottom: 24px;">
+          <h2 style="color: #1f2937; margin: 0 0 16px 0; font-size: 24px; font-weight: 600;">
+            Dear ${escapeHtml(data.fullName)},
+          </h2>
+          <p style="color: #4b5563; margin: 0 0 16px 0; font-size: 16px; line-height: 1.6;">
+            Thank you for your interest in joining Global Education and Charitable Trust (GEKCT) as a <strong>${escapeHtml(data.joinAs)}</strong>!
+          </p>
+          <p style="color: #4b5563; margin: 0 0 24px 0; font-size: 16px; line-height: 1.6;">
+            Your application has been successfully submitted and is currently under review.
+          </p>
+        </div>
+
+        <!-- Application Details -->
+        <div style="background-color: #f8fafc; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+          <h3 style="color: #1f2937; margin: 0 0 16px 0; font-size: 18px; font-weight: 600;">
+            Application Details
+          </h3>
+          <div style="display: grid; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+              <span style="color: #6b7280; font-weight: 500;">Name:</span>
+              <span style="color: #1f2937; font-weight: 600;">${escapeHtml(data.fullName)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+              <span style="color: #6b7280; font-weight: 500;">Email:</span>
+              <span style="color: #1f2937; font-weight: 600;">${escapeHtml(data.email)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+              <span style="color: #6b7280; font-weight: 500;">Position:</span>
+              <span style="color: #1f2937; font-weight: 600;">${escapeHtml(data.joinAs)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+              <span style="color: #6b7280; font-weight: 500;">Profession:</span>
+              <span style="color: #1f2937; font-weight: 600;">${escapeHtml(data.profession)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+              <span style="color: #6b7280; font-weight: 500;">Application Date:</span>
+              <span style="color: #1f2937; font-weight: 600;">${data.applicationDate.toLocaleDateString()}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+              <span style="color: #6b7280; font-weight: 500;">Application ID:</span>
+              <span style="color: #1f2937; font-weight: 600; font-family: monospace;">${escapeHtml(data.applicationId)}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin-bottom: 24px;">
+          <h3 style="color: #92400e; margin: 0 0 12px 0; font-size: 18px; font-weight: 600;">
+            What happens next?
+          </h3>
+          <ol style="color: #92400e; margin: 0; padding-left: 20px; line-height: 1.6;">
+            <li style="margin-bottom: 8px;">Our team will review your application</li>
+            <li style="margin-bottom: 8px;">We'll contact you within 3-5 business days</li>
+            <li style="margin-bottom: 0;">If approved, you'll receive further instructions</li>
+          </ol>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 24px;">
+          <p style="color: #4b5563; margin: 0; font-size: 16px; line-height: 1.6;">
+            We appreciate your commitment to making a difference in our community!
+          </p>
+        </div>
+
+        <div style="text-align: center; padding: 20px; background-color: #f8fafc; border-radius: 8px;">
+          <p style="color: #1f2937; margin: 0 0 8px 0; font-weight: 600;">Best regards,</p>
+          <p style="color: #1f2937; margin: 0; font-weight: 600;">GEKCT Team</p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="background-color: #1f2937; padding: 24px; text-align: center;">
+        <div style="margin-bottom: 16px;">
+          <h3 style="color: #ffffff; margin: 0 0 8px 0; font-size: 18px; font-weight: 600;">
+            Global Education and Charitable Trust
+          </h3>
+          <p style="color: #d1d5db; margin: 0; font-size: 14px;">
+            Making a difference in our community
+          </p>
+        </div>
+        
+        <div style="display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; flex-wrap: wrap;">
+          <div style="text-align: center;">
+            <p style="color: #9ca3af; font-size: 12px; margin: 0 0 4px 0; font-weight: 500;">Website</p>
+            <p style="color: #1e40af; font-size: 14px; margin: 0; font-weight: 500;">www.gekct.org</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="color: #9ca3af; font-size: 12px; margin: 0 0 4px 0; font-weight: 500;">Email</p>
+            <p style="color: #1e40af; font-size: 14px; margin: 0; font-weight: 500;">support@globalfoundationngo.com</p>
+          </div>
+          <div style="text-align: center;">
+            <p style="color: #9ca3af; font-size: 12px; margin: 0 0 4px 0; font-weight: 500;">Phone</p>
+            <p style="color: #1e40af; font-size: 14px; margin: 0; font-weight: 500;">+91 9898098977</p>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid #374151;">
+          <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+            This is an automated message. Please do not reply to this email.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+  </html>`
 }

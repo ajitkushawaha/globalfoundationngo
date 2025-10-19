@@ -1,13 +1,13 @@
 import { PublicLayout } from "@/components/public-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Shield, FileText, BarChart3, Users, Eye, CheckCircle, TrendingUp, PieChart, DollarSign, Target, Award, Mail, Phone, MapPin } from "lucide-react"
+import { Shield, Users, Eye, CheckCircle, TrendingUp, PieChart, DollarSign, Target, Award, Mail, Phone, MapPin } from "lucide-react"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Trust & Transparency - Global Education and Charitable Trust",
-  description: "Learn about GEKCT's commitment to transparency, accountability, and good governance. View our financial reports, impact metrics, and governance structure.",
-  keywords: ["transparency", "accountability", "governance", "financial reports", "impact", "charity", "non-profit", "trust"],
+  description: "Learn about GEKCT's commitment to transparency, accountability, and good governance. View our impact metrics and governance structure.",
+  keywords: ["transparency", "accountability", "governance", "impact", "charity", "non-profit", "trust"],
   openGraph: {
     title: "Trust & Transparency - Global Education and Charitable Trust",
     description: "Learn about GEKCT's commitment to transparency, accountability, and good governance.",
@@ -92,186 +92,6 @@ export default function TrustTransparencyPage() {
         </div>
       </section>
 
-      {/* Financial Transparency */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-                Financial Transparency
-              </h2>
-              <div className="w-24 h-1 bg-primary mx-auto mb-6" />
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-12">
-              {/* Annual Reports */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <FileText className="h-6 w-6 mr-2 text-primary" />
-                    Annual Reports
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Financial Statements</span>
-                      <Badge variant="outline">Available</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Program Expenditure</span>
-                      <Badge variant="outline">Available</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Administrative Costs</span>
-                      <Badge variant="outline">Available</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Impact Reports</span>
-                      <Badge variant="outline">Available</Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Donation Tracking */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <BarChart3 className="h-6 w-6 mr-2 text-primary" />
-                    Donation Tracking
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Real-time Tracking</span>
-                      <Badge variant="outline">Live</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Project Allocation</span>
-                      <Badge variant="outline">Transparent</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Fund Utilization</span>
-                      <Badge variant="outline">Regular Updates</Badge>
-                    </div>
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                      <span className="font-medium">Reporting System</span>
-                      <Badge variant="outline">Automated</Badge>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How We Use Your Donations */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-                How We Use Your Donations
-              </h2>
-              <div className="w-24 h-1 bg-primary mx-auto mb-6" />
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                Every rupee you donate is carefully allocated to maximize impact across our key initiatives
-              </p>
-            </div>
-
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Pie Chart Visualization */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-center">Donation Distribution</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="h-80 flex items-center justify-center">
-                    <div className="w-64 h-64 relative">
-                      <div className="w-full h-full rounded-full relative overflow-hidden">
-                        <div className="absolute inset-0 rounded-full" style={{
-                          background: `conic-gradient(
-                            #f97316 0deg 144deg,
-                            #0891b2 144deg 230.4deg,
-                            #1f2937 230.4deg 302.4deg,
-                            #6b7280 302.4deg 360deg
-                          )`
-                        }}></div>
-                        <div className="absolute inset-8 bg-background rounded-full flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-primary">100%</div>
-                            <div className="text-sm text-muted-foreground">Transparent</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Distribution Breakdown */}
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-                    Direct Impact Allocation
-                  </h3>
-                  <p className="text-lg leading-relaxed mb-6">
-                    We maintain detailed records and provide regular updates on how your contributions 
-                    are making a difference in the communities we serve.
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#f97316' }}></div>
-                      <span className="font-medium">Education Programs</span>
-                    </div>
-                    <span className="font-bold text-lg">40%</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#0891b2' }}></div>
-                      <span className="font-medium">Animal Welfare</span>
-                    </div>
-                    <span className="font-bold text-lg">25%</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#1f2937' }}></div>
-                      <span className="font-medium">Elderly Care</span>
-                    </div>
-                    <span className="font-bold text-lg">20%</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#6b7280' }}></div>
-                      <span className="font-medium">Environmental</span>
-                    </div>
-                    <span className="font-bold text-lg">15%</span>
-                  </div>
-                </div>
-
-                <div className="mt-8 p-4 bg-primary/10 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-bold text-lg">Administrative Costs</h4>
-                      <p className="text-sm text-muted-foreground">Essential operational expenses</p>
-                    </div>
-                    <span className="font-bold text-lg">10%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Governance */}
       <section className="py-20 bg-muted/30">
@@ -324,7 +144,7 @@ export default function TrustTransparencyPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
-                    <FileText className="h-6 w-6 mr-2 text-primary" />
+                    <Shield className="h-6 w-6 mr-2 text-primary" />
                     Policies & Procedures
                   </CardTitle>
                 </CardHeader>

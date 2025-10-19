@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     
     // Get team members
     const teamMembers = await TeamMember.find(query)
-      .select('fullName email phone instagramLink profession photo joinAs role department bio skills status socialLinks address')
+      .select('fullName email phone instagramLink profession photo joinAs role department skills status socialLinks address')
       .sort({ sortOrder: 1, fullName: 1 })
       .limit(limit)
     

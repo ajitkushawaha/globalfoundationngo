@@ -73,9 +73,9 @@ export default function ImportTeamMembersPage() {
   }
 
   const downloadTemplate = () => {
-    const template = `Full Name,Email,Phone,Profession,Instagram Link,Join As,Role,Department,Bio,Skills,Availability,Status,City,State,Country,LinkedIn,Twitter,Facebook,Public
-John Doe,john@example.com,+91-9876543210,Software Engineer,https://instagram.com/johndoe,team,Developer,Technology,Passionate developer,Web Development;JavaScript,full_time,active,Mumbai,Maharashtra,India,https://linkedin.com/in/johndoe,https://twitter.com/johndoe,,Yes
-Jane Smith,jane@example.com,+91-9876543211,Teacher,https://instagram.com/janesmith,volunteer,Education Volunteer,Education,Experienced teacher,Education;Teaching,weekends,active,Delhi,Delhi,India,https://linkedin.com/in/janesmith,,,Yes`
+    const template = `Full Name,Email,Phone,Profession,Instagram Link,Join As,Role,Department,Skills,Availability,Status,City,State,Country,LinkedIn,Twitter,Facebook,Public
+John Doe,john@example.com,+91-9876543210,Software Engineer,https://instagram.com/johndoe,team,Developer,Technology,Web Development;JavaScript,full_time,active,Mumbai,Maharashtra,India,https://linkedin.com/in/johndoe,https://twitter.com/johndoe,,Yes
+Jane Smith,jane@example.com,+91-9876543211,Teacher,https://instagram.com/janesmith,volunteer,Education Volunteer,Education,Education;Teaching,weekends,active,Delhi,Delhi,India,https://linkedin.com/in/janesmith,,,Yes`
 
     const blob = new Blob([template], { type: 'text/csv' })
     const url = window.URL.createObjectURL(blob)
@@ -211,7 +211,6 @@ Jane Smith,jane@example.com,+91-9876543211,Teacher,https://instagram.com/janesmi
                     <li>• <strong>Join As</strong> - team, volunteer, board_member, advisor</li>
                     <li>• <strong>Role</strong> - Specific role in organization</li>
                     <li>• <strong>Department</strong> - Department or division</li>
-                    <li>• <strong>Bio</strong> - Short biography</li>
                     <li>• <strong>Skills</strong> - Comma-separated skills</li>
                     <li>• <strong>Availability</strong> - full_time, part_time, weekends, evenings, flexible</li>
                     <li>• <strong>Status</strong> - active, inactive, pending, suspended</li>

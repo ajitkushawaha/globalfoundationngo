@@ -10,7 +10,6 @@ export interface ITeamMember extends Document {
   joinAs: 'team' | 'volunteer' | 'board_member' | 'advisor'
   role?: string
   department?: string
-  bio?: string
   skills: string[]
   availability: 'full_time' | 'part_time' | 'weekends' | 'evenings' | 'flexible'
   status: 'active' | 'inactive' | 'pending' | 'suspended'
@@ -96,10 +95,6 @@ const TeamMemberSchema = new Schema<ITeamMember>({
     type: String,
     trim: true,
     maxlength: [50, 'Department cannot be more than 50 characters']
-  },
-  bio: {
-    type: String,
-    maxlength: [1000, 'Bio cannot be more than 1000 characters']
   },
   skills: [{
     type: String,

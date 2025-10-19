@@ -23,6 +23,7 @@ import {
   Camera,
   Gift
 } from "lucide-react"
+import Image from "next/image"
 
 interface DonationCategory {
   id: string
@@ -582,6 +583,62 @@ export default function DonatePage() {
                       <Camera className="w-3 h-3 mr-1" />
                       View Photos
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Bank & UPI Details */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+                Donate via Bank Transfer or UPI
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-6" />
+              <p className="text-lg text-muted-foreground">
+                Use the official bank details of Global Education and Charitable Trust or scan the UPI to donate directly.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 items-start">
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-4">Bank Transfer Details</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Account Name</span>
+                      <span className="font-medium text-right">Global Education and Charitable Trust</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Account Number</span>
+                      <span className="font-medium">9551204332</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">IFSC Code</span>
+                      <span className="font-medium">KKBK0000838</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Branch</span>
+                      <span className="font-medium">NARANPURA</span>
+                    </div>
+                  </div>
+                  <div className="mt-6 rounded-lg overflow-hidden border">
+                    <Image src="/bank.jpeg" alt="Bank details" width={1200} height={800} className="w-full h-auto object-contain bg-white" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-4">UPI Payment</h3>
+                  <p className="text-sm text-muted-foreground mb-4">Scan the QR code below to donate via UPI.</p>
+                  <div className="rounded-lg overflow-hidden border max-w-md mx-auto">
+                    <Image src="/upi.jpeg" alt="UPI QR code" width={800} height={800} className="w-full h-auto object-contain bg-white" />
                   </div>
                 </CardContent>
               </Card>

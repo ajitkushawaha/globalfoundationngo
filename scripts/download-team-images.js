@@ -27,7 +27,6 @@ const TeamMemberSchema = new mongoose.Schema({
   joinAs: { type: String, required: true, enum: ['team', 'volunteer', 'board_member', 'advisor'] },
   role: { type: String, trim: true },
   department: { type: String, trim: true },
-  bio: { type: String, maxlength: 1000 },
   skills: [{ type: String, trim: true }],
   availability: { type: String, enum: ['full_time', 'part_time', 'weekends', 'evenings', 'flexible'], default: 'flexible' },
   status: { type: String, enum: ['active', 'inactive', 'pending', 'suspended'], default: 'pending' },

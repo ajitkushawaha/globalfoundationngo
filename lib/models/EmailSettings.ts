@@ -20,6 +20,7 @@ export interface IEmailSettings extends Document {
   donationApprovedSubject: string
   donationRejectedSubject: string
   adminNotificationSubject: string
+  volunteerConfirmationSubject: string
   
   // Metadata
   isActive: boolean
@@ -92,6 +93,10 @@ const EmailSettingsSchema = new Schema<IEmailSettings>({
   adminNotificationSubject: {
     type: String,
     default: '🔔 New Donation Received - Action Required'
+  },
+  volunteerConfirmationSubject: {
+    type: String,
+    default: '🎉 Welcome to GEKCT - Volunteer Application Received!'
   },
   isActive: {
     type: Boolean,

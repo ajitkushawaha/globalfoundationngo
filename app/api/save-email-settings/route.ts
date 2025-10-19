@@ -18,6 +18,7 @@ const EmailSettingsSchema = new mongoose.Schema({
   donationApprovedSubject: String,
   donationRejectedSubject: String,
   adminNotificationSubject: String,
+  volunteerConfirmationSubject: String,
   isActive: { type: Boolean, default: true },
   createdBy: String
 }, { timestamps: true })

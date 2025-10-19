@@ -148,7 +148,6 @@ function mapCSVToSchema(row: any) {
     joinAs: mapJoinAs(row['Join As'] || row['Type'] || row['Category'] || row['joinAs']),
     role: row['Role'] || row['role'] || row['Job Role'],
     department: row['Department'] || row['department'] || row['Division'],
-    bio: row['Bio'] || row['bio'] || row['Description'] || row['About'],
     skills: parseSkills(row['Skills'] || row['skills'] || row['Expertise']),
     availability: mapAvailability(row['Availability'] || row['availability'] || row['Time']),
     status: mapStatus(row['Status'] || row['status'] || row['Active']),

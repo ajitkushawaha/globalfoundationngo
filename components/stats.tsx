@@ -27,23 +27,55 @@ const iconMap: { [key: string]: any } = {
 }
 
 async function getStats(): Promise<Statistic[]> {
+  // Prefer relative URL to avoid cross-host/network timeouts in SSR. Use NEXT_PUBLIC_BASE_URL only if explicitly set.
+  const url = process.env.NEXT_PUBLIC_BASE_URL
+    ? `${process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, '')}/api/statistics`
+    : '/api/statistics'
+
+  // Add a safety timeout to prevent hanging requests
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
+
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/statistics`, {
-      cache: 'no-store'
+    const response = await fetch(url, {
+      cache: 'no-store',
+      // small revalidate window can be used if needed instead of no-store
+      // next: { revalidate: 120 },
+      signal: controller.signal,
     })
-    const data = await response.json()
-    if (data.success) {
-      return data.data.filter((stat: Statistic) => stat.isActive).sort((a: Statistic, b: Statistic) => a.order - b.order)
+
+    if (!response.ok) {
+      return []
+    }
+
+    let data: any
+    try {
+      data = await response.json()
+    } catch {
+      return []
+    }
+
+    if (data?.success && Array.isArray(data.data)) {
+      return data.data
+        .filter((stat: Statistic) => stat.isActive)
+        .sort((a: Statistic, b: Statistic) => a.order - b.order)
     }
     return []
   } catch (error) {
     console.error('Error fetching statistics:', error)
     return []
+  } finally {
+    clearTimeout(timeout)
   }
 }
 
 export async function Stats() {
   const stats = await getStats()
+
+  if (!stats || stats.length === 0) {
+    // If no stats available (e.g., API timeout), avoid rendering an empty section
+    return null
+  }
 
   return (
     <section className="py-20 bg-primary text-primary-foreground p-4">

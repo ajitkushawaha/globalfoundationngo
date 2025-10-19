@@ -42,7 +42,6 @@ interface TeamMember {
   joinAs: 'team' | 'volunteer' | 'board_member' | 'advisor'
   role?: string
   department?: string
-  bio?: string
   skills: string[]
   availability: 'full_time' | 'part_time' | 'weekends' | 'evenings' | 'flexible'
   status: 'active' | 'inactive' | 'pending' | 'suspended'
@@ -88,7 +87,6 @@ export default function EditTeamMemberPage() {
     joinAs: 'volunteer' as TeamMember['joinAs'],
     role: '',
     department: '',
-    bio: '',
     skills: [] as string[],
     availability: 'flexible' as TeamMember['availability'],
     status: 'active' as TeamMember['status'],
@@ -144,7 +142,6 @@ export default function EditTeamMemberPage() {
           joinAs: memberData.joinAs || 'volunteer',
           role: memberData.role || '',
           department: memberData.department || '',
-          bio: memberData.bio || '',
           skills: memberData.skills || [],
           availability: memberData.availability || 'flexible',
           status: memberData.status || 'active',
@@ -554,23 +551,12 @@ export default function EditTeamMemberPage() {
                 </CardContent>
               </Card>
 
-              {/* Bio & Skills */}
+              {/* Skills */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Bio & Skills</CardTitle>
+                  <CardTitle>Skills</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="bio">Bio</Label>
-                    <Textarea
-                      id="bio"
-                      value={formData.bio}
-                      onChange={(e) => handleInputChange('bio', e.target.value)}
-                      placeholder="Tell us about this team member..."
-                      rows={4}
-                    />
-                  </div>
-
                   <div>
                     <Label htmlFor="skills">Skills</Label>
                     <Input
