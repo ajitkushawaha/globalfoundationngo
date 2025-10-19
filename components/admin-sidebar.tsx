@@ -10,7 +10,8 @@ import {
   Settings, 
   X,
   Globe,
-  Users
+  Users,
+  Image
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -24,6 +25,7 @@ export function AdminSidebar({ sidebarOpen, setSidebarOpen }: AdminSidebarProps)
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: BarChart3, current: pathname === '/admin' },
     { name: 'Donations', href: '/admin/donations', icon: Heart, current: pathname.startsWith('/admin/donations') },
+    { name: 'Gallery', href: '/admin/gallery', icon: Image, current: pathname.startsWith('/admin/gallery') },
     { name: 'Pages', href: '/admin/pages', icon: Globe, current: pathname.startsWith('/admin/pages') },
     { name: 'Blog Posts', href: '/admin/blog', icon: FileText, current: pathname.startsWith('/admin/blog') },
     { name: 'Team Members', href: '/admin/team-members', icon: Users, current: pathname.startsWith('/admin/team-members') },

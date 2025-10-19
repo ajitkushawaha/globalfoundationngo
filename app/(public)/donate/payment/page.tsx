@@ -1,12 +1,24 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { PublicLayout } from "@/components/public-layout"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Copy, CheckCircle2, Banknote, QrCode, ArrowLeft } from "lucide-react"
+
+interface OrganizationSettings {
+  organizationName: string
+  bankDetails: {
+    accountName: string
+    accountNumber: string
+    ifscCode: string
+    bankName: string
+    branch: string
+    upiId: string
+  }
+}
 
 function copyToClipboard(text: string) {
   navigator.clipboard?.writeText(text)
@@ -17,17 +29,54 @@ export default function PaymentPage() {
   const router = useRouter()
   const amount = params.get("amount") || "0"
   const donationId = params.get("donationId") || ""
+  
+  const [orgSettings, setOrgSettings] = useState<OrganizationSettings | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // Organization payment details (edit as needed)
-  const org = {
-    name: "GEKCT Foundation",
-    upiId: "gekct@okaxis",
-    accountName: "GEKCT Foundation",
-    accountNumber: "123456789012",
-    ifsc: "UTIB0001234",
-    bank: "Axis Bank",
-    branch: "Ahmedabad Main"
-  }
+  // Fetch organization settings
+  useEffect(() => {
+    const fetchOrgSettings = async () => {
+      try {
+        const response = await fetch('/api/organization-settings')
+        const data = await response.json()
+        if (data.success) {
+          setOrgSettings(data.data)
+        }
+      } catch (error) {
+        console.error('Error fetching organization settings:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchOrgSettings()
+  }, [])
+
+  // Fallback organization details if API fails
+  const org = useMemo(() => {
+    if (orgSettings) {
+      return {
+        name: orgSettings.organizationName,
+        upiId: orgSettings.bankDetails.upiId,
+        accountName: orgSettings.bankDetails.accountName,
+        accountNumber: orgSettings.bankDetails.accountNumber,
+        ifsc: orgSettings.bankDetails.ifscCode,
+        bank: orgSettings.bankDetails.bankName,
+        branch: orgSettings.bankDetails.branch
+      }
+    }
+    
+    // Fallback to hardcoded values
+    return {
+      name: "Global Education and Charitable Trust",
+      upiId: "50050505@kotak",
+      accountName: "Global Education and Charitable Trust",
+      accountNumber: "9551204332",
+      ifsc: "KKBK0000838",
+      bank: "Kotak Mahindra Bank",
+      branch: "NARANPURA"
+    }
+  }, [orgSettings])
 
   const upiLink = useMemo(() => {
     const pn = encodeURIComponent(org.name)
@@ -42,6 +91,24 @@ export default function PaymentPage() {
     const data = encodeURIComponent(upiLink)
     return `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${data}`
   }, [upiLink])
+
+  if (loading) {
+    return (
+      <PublicLayout>
+        <section className="bg-gradient-to-br from-primary/10 via-accent/5 to-background py-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center">
+              <div className="animate-pulse">
+                <div className="h-8 bg-gray-300 rounded mb-4 mx-auto w-64"></div>
+                <div className="h-12 bg-gray-300 rounded mb-6 mx-auto w-96"></div>
+                <div className="h-4 bg-gray-300 rounded mb-8 mx-auto w-48"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </PublicLayout>
+    )
+  }
 
   return (
     <PublicLayout>

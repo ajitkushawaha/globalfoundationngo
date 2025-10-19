@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       isActive: user.isActive
     }
     
-    // Set HTTP-only cookie
+    // Set HTTP-only cookies
     const response = NextResponse.json({
       success: true,
       data: {
@@ -82,8 +82,23 @@ export async function POST(request: NextRequest) {
       message: 'Login successful'
     })
     
+    // Set both cookies for compatibility
     response.cookies.set('auth-token', token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 // 7 days
+    })
+    
+    response.cookies.set('adminLoggedIn', 'true', {
+      httpOnly: false, // Allow client-side access
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 // 7 days
+    })
+    
+    response.cookies.set('adminUser', JSON.stringify(userResponse), {
+      httpOnly: false, // Allow client-side access
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 // 7 days

@@ -10,7 +10,7 @@ interface PageProps {
 export default function BlogPostPage({ params }: PageProps) {
   return (
     <PublicLayout>
-      <div className="pt-16">
+      <div className="">
         <SingleBlogPost slug={params.slug} />
       </div>
     </PublicLayout>

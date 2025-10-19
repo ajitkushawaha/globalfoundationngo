@@ -1,16 +1,108 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { SankeyChart } from "@/components/ui/sankey-chart"
 
-const donationData = [
-  { name: "Education Provided", value: 16.8, color: "#f97316" },
-  { name: "Animal Rescue", value: 17.2, color: "#0891b2" },
-  { name: "Elderly Care", value: 16.6, color: "#1f2937" },
-  { name: "Helping To Vulnerable", value: 19.4, color: "#6b7280" },
-  { name: "Plantation", value: 16.0, color: "#ea580c" },
-  { name: "Annadanam Bhavan", value: 14.0, color: "#f59e0b" },
-]
+interface DonationCategory {
+  _id: string
+  name: string
+  slug: string
+  description: string
+  unitPrice: number
+  unit: string
+  currentFunded: number
+  targetGoal: number
+  donors: number
+  color?: string
+  bgColor?: string
+}
 
-export function DonationTransparency() {
+async function getDonationCategories(): Promise<DonationCategory[]> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const url = `${baseUrl}/api/donation-categories`
+
+  try {
+    const response = await fetch(url, {
+      cache: 'no-store',
+      next: { revalidate: 120 }
+    })
+
+    if (!response.ok) {
+      return []
+    }
+
+    const data = await response.json()
+    if (data?.success && Array.isArray(data.data)) {
+      return data.data
+    }
+    return []
+  } catch (error) {
+    console.error('Error fetching donation categories:', error)
+    return []
+  }
+}
+
+function generateSankeyData(categories: DonationCategory[]) {
+  if (categories.length === 0) {
+    return { nodes: [], links: [] }
+  }
+
+  // Calculate total donations
+  const totalDonations = categories.reduce((sum, cat) => sum + (cat.currentFunded * cat.unitPrice), 0)
+  
+  // Generate colors for categories
+  const colors = [
+    "#f97316", "#0891b2", "#1f2937", "#6b7280", 
+    "#ea580c", "#f59e0b", "#10b981", "#8b5cf6"
+  ]
+
+  const nodes = categories.map((category, index) => {
+    const donationAmount = category.currentFunded * category.unitPrice
+    const percentage = totalDonations > 0 ? (donationAmount / totalDonations) * 100 : 0
+    
+    return {
+      id: category.slug || category._id,
+      name: category.name.length > 12 ? category.name.substring(0, 12) + "..." : category.name,
+      color: colors[index % colors.length],
+      percentage: Math.round(percentage * 10) / 10
+    }
+  })
+
+  const links = categories.map((category, index) => {
+    const donationAmount = category.currentFunded * category.unitPrice
+    const percentage = totalDonations > 0 ? (donationAmount / totalDonations) * 100 : 0
+    
+    return {
+      source: category.slug || category._id,
+      target: "impact",
+      value: Math.round(percentage * 10) / 10,
+      color: colors[index % colors.length]
+    }
+  })
+
+  return { nodes, links }
+}
+
+export async function DonationTransparency() {
+  const categories = await getDonationCategories()
+  const sankeyData = generateSankeyData(categories)
+  
+  if (categories.length === 0) {
+    return (
+      <section className="py-20">
+        <div className="container">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-red-600" style={{ fontFamily: "var(--font-playfair)" }}>
+              Error Loading Donation Data
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Unable to load donation categories. Please try again later.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+  
   return (
     <section className="py-20">
       <div className="container">
@@ -25,68 +117,45 @@ export function DonationTransparency() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle className="text-center">Donation Distribution</CardTitle>
+              <CardTitle className="text-center text-2xl">Donation Flow & Impact</CardTitle>
+              <p className="text-center text-muted-foreground">
+                See exactly how your donations flow into our initiatives and create maximum impact
+              </p>
             </CardHeader>
             <CardContent>
-              <div className="h-80 flex items-center justify-center">
-                <div className="w-64 h-64 relative">
-                  {/* Simple pie chart using CSS */}
-                  <div className="w-full h-full rounded-full relative overflow-hidden">
-                    <div 
-                      className="absolute inset-0 rounded-full"
-                      style={{
-                        background: `conic-gradient(
-                          #f97316 0deg 60.48deg,
-                          #0891b2 60.48deg 122.4deg,
-                          #1f2937 122.4deg 182.16deg,
-                          #6b7280 182.16deg 251.28deg,
-                          #ea580c 251.28deg 308.88deg,
-                          #f59e0b 308.88deg 360deg
-                        )`
-                      }}
-                    />
-                    <div className="absolute inset-8 bg-background rounded-full flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">100%</div>
-                        <div className="text-sm text-muted-foreground">Transparent</div>
-                      </div>
-                    </div>
+              <div className="space-y-12">
+                {/* Sankey Chart */}
+                <div className="flex justify-center">
+                  <SankeyChart 
+                    data={sankeyData} 
+                    width={1000}
+                    height={800}
+                  />
+                </div>
+                
+                {/* Description and CTA */}
+                <div className="text-center space-y-6 pt-8">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+                      Transparency in Action
+                    </h3>
+                    <p className="text-lg leading-relaxed max-w-3xl mx-auto">
+                      Every donation flows directly into our initiatives, creating measurable impact across education, 
+                      animal rescue, elderly care, and community support. Our commitment to transparency ensures 
+                      you can trust that your contributions are being used effectively.
+                    </p>
                   </div>
+
+                  <Button size="lg" className="px-8 py-4 text-lg">
+                    Make a Donation Today
+                  </Button>
                 </div>
               </div>
             </CardContent>
           </Card>
-
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-                Transparency in Action
-              </h3>
-              <p className="text-lg leading-relaxed mb-6">
-                Every rupee you donate is carefully allocated to maximize impact across our key initiatives. We maintain
-                detailed records and provide regular updates on how your contributions are making a difference.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {donationData.map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-4 h-4 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="font-medium">{item.name}</span>
-                  </div>
-                  <span className="font-bold">{item.value}%</span>
-                </div>
-              ))}
-            </div>
-
-            <Button size="lg" className="w-full mt-8">
-              Make a Donation Today
-            </Button>
-          </div>
         </div>
       </div>
     </section>

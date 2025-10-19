@@ -27,10 +27,9 @@ const iconMap: { [key: string]: any } = {
 }
 
 async function getStats(): Promise<Statistic[]> {
-  // Prefer relative URL to avoid cross-host/network timeouts in SSR. Use NEXT_PUBLIC_BASE_URL only if explicitly set.
-  const url = process.env.NEXT_PUBLIC_BASE_URL
-    ? `${process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, '')}/api/statistics`
-    : '/api/statistics'
+  // Use absolute URL for server-side rendering
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const url = `${baseUrl}/api/statistics`
 
   // Add a safety timeout to prevent hanging requests
   const controller = new AbortController()

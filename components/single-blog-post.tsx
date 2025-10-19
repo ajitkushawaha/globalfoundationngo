@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar, User, ArrowLeft, ArrowRight, Heart, GraduationCap, Users, TreePine, Loader2, Eye } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { DonationSpotlight } from "@/components/donation-spotlight"
 
 interface BlogPost {
   _id: string
@@ -212,7 +213,7 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
 
   return (
     <section className="py-2 bg-background ">
-      <div className="container max-w-6xl mx-auto">
+      <div className="container w-full mx-auto px-4">
         {/* Back Button */}
         <div className="mb-8">
           <Button 
@@ -225,11 +226,19 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Sidebar - Donation Spotlight */}
+          <div className="lg:w-1/6 order-1 lg:order-1">
+            <div className="sticky top-8">
+              <DonationSpotlight />
+            </div>
+          </div>
+
           {/* Main content */}
-          <div className="lg:col-span-2">
-            {/* Blog Post Header */}
-            <Card className="overflow-hidden mb-8">
+          <div className="lg:w-2/3 order-2 lg:order-2">
+            {/* Blog Post - Combined Card */}
+            <Card className="overflow-hidden mb-8 border border-gray-200">
+              {/* Header Image/Video */}
               <div className="aspect-video relative">
                 {blogPost.mediaType === 'video' && blogPost.videoUrl ? (
                   <iframe
@@ -256,7 +265,9 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
                   </>
                 )}
               </div>
+              
               <CardContent className="p-8">
+                {/* Meta Information */}
                 <div className="flex items-center gap-4 mb-6">
                   <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-medium rounded-full">
                     {blogPost.category}
@@ -268,15 +279,18 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
                   </div>
                 </div>
                 
+                {/* Title */}
                 <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight" style={{ fontFamily: "var(--font-playfair)" }}>
                   {blogPost.title}
                 </h1>
                 
+                {/* Excerpt */}
                 <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
                   {blogPost.excerpt}
                 </p>
                 
-                <div className="flex items-center justify-between border-t pt-6">
+                {/* Author and Date */}
+                <div className="flex items-center justify-between border-t border-gray-200 pt-6 mb-8">
                   <div className="flex items-center text-sm text-muted-foreground">
                     <User className="w-4 h-4 mr-2" />
                     <span>{blogPost.author}</span>
@@ -284,39 +298,33 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
                     <span>{formatDate(blogPost.publishedAt)}</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Blog Post Content */}
-            <Card className="mb-8">
-              <CardContent className="p-8">
+                {/* Blog Content */}
                 <div 
                   className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-primary prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground prose-h3:text-2xl prose-h3:font-bold prose-h3:text-foreground prose-h3:mb-4 prose-h3:mt-8 prose-h4:text-xl prose-h4:font-semibold prose-h4:text-foreground prose-h4:mb-3 prose-h4:mt-6 prose-p:leading-relaxed prose-p:mb-4 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:py-4 prose-blockquote:my-6 prose-blockquote:bg-primary/5 prose-blockquote:italic prose-blockquote:text-lg prose-blockquote:text-foreground prose-code:bg-secondary prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-sm prose-code:font-mono"
                   dangerouslySetInnerHTML={{ 
                     __html: formatContent(blogPost.content)
                   }}
                 />
+
+                {/* Tags */}
+                {blogPost.tags && blogPost.tags.length > 0 && (
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <h3 className="text-lg font-semibold mb-4">Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {blogPost.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded-full"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
-
-            {/* Tags */}
-            {blogPost.tags && blogPost.tags.length > 0 && (
-              <Card className="mb-8">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Tags</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {blogPost.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded-full"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Call to Action */}
             <Card className="bg-primary/5 border-primary/20">
@@ -340,10 +348,11 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
             </Card>
           </div>
 
-          {/* Sidebar */}
-          <aside className="space-y-4 lg:sticky lg:top-24 self-start">
+          {/* Right Sidebar - Recent Stories */}
+          <aside className="lg:w-1/6 order-3 lg:order-3">
+            <div className="sticky top-8 space-y-4">
             {/* Recent Stories */}
-            <Card>
+            <Card className="border border-gray-200">
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>Recent Stories</h3>
                 {recentLoading ? (
@@ -354,45 +363,31 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
                       <p className="text-sm text-muted-foreground">No recent stories available.</p>
                     )}
                     {recentPosts.map((post) => (
-                      <div key={post._id} className="flex items-center gap-3">
-                        <div className="relative w-20 h-16 rounded overflow-hidden flex-shrink-0">
-                          {post.mediaType === 'video' && post.videoUrl ? (
-                            <img
-                              src={`https://img.youtube.com/vi/${extractYouTubeVideoId(post.videoUrl) || ''}/hqdefault.jpg`}
-                              alt={post.videoTitle || post.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <>
-                              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                                {getCategoryIcon(post.category) && (
-                                  <span className="text-primary/60">
-                                    {/* icon placeholder to avoid SSR issues */}
-                                  </span>
-                                )}
-                              </div>
+                      <div key={post._id} className="group">
+                        <Link href={`/blog/${post.slug}`} className="block">
+                          <div className="relative w-full h-32 rounded overflow-hidden mb-2">
+                            {post.mediaType === 'video' && post.videoUrl ? (
+                              <img
+                                src={`https://img.youtube.com/vi/${extractYouTubeVideoId(post.videoUrl) || ''}/hqdefault.jpg`}
+                                alt={post.videoTitle || post.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            ) : (
                               <Image
                                 src={post.image}
                                 alt={post.imageAlt || post.title}
                                 fill
-                                className="object-cover"
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
                                 onError={(e) => {
                                   e.currentTarget.style.display = 'none';
                                 }}
                               />
-                            </>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <Link href={`/blog/${post.slug}`} className="block group">
-                            <p className="font-medium leading-snug group-hover:text-primary line-clamp-2">{post.title}</p>
-                          </Link>
-                          <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="flex items-center"><Calendar className="w-3 h-3 mr-1" />{formatDate(post.publishedAt)}</span>
-                            <span className="flex items-center"><Eye className="w-3 h-3 mr-1" />{post.views || 0} Views</span>
-                            <span>{post.readTime}</span>
+                            )}
                           </div>
-                        </div>
+                          <h4 className="font-medium text-sm leading-snug group-hover:text-primary line-clamp-2">
+                            {post.title}
+                          </h4>
+                        </Link>
                       </div>
                     ))}
 
@@ -408,7 +403,7 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
             </Card>
 
             {/* Donor Spotlight */}
-            <Card>
+            <Card className="border border-gray-200">
               <CardContent className="p-6">
                 <h3 className="text-xl font-semibold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>Donor Spotlight</h3>
                 <div className="space-y-6">
@@ -442,6 +437,7 @@ export function SingleBlogPost({ slug }: SingleBlogPostProps) {
                 </div>
               </CardContent>
             </Card>
+            </div>
           </aside>
         </div>
       </div>

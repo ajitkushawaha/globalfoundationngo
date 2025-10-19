@@ -7,6 +7,7 @@ import { Impact } from "@/components/impact"
 import { DonationTransparency } from "@/components/donation-transparency"
 import { Initiatives } from "@/components/initiatives"
 import { Blog } from "@/components/blog"
+import GEKCTHeroParallaxDemo from "@/components/ui/gekct-hero-parallax-demo"
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <MissionVision />
       <Impact />
       <DonationTransparency />
+      <GEKCTHeroParallaxDemo />
       <Blog />
     </PublicLayout>
   )

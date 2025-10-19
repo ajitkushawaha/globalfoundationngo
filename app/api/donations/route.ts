@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
         name: donorName,
         email: donorEmail,
         phone: donor.phone ? String(donor.phone) : '',
+        instagram: donor.instagram ? String(donor.instagram) : '',
         message: donor.message ? String(donor.message) : '',
         anonymous: !!donor.anonymous,
       },

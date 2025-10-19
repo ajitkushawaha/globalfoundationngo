@@ -31,6 +31,7 @@ interface DonorData {
   name: string
   email: string
   phone: string
+  instagram: string
   message: string
   anonymous: boolean
 }
@@ -47,6 +48,7 @@ export function DonationModal({
     name: "",
     email: "",
     phone: "",
+    instagram: "",
     message: "",
     anonymous: false
   })
@@ -189,6 +191,24 @@ export function DonationModal({
               {errors.phone && (
                 <p className="text-sm text-red-500 mt-1">{errors.phone}</p>
               )}
+            </div>
+
+            <div>
+              <Label htmlFor="instagram">Instagram Username (Optional)</Label>
+              <Input
+                id="instagram"
+                name="instagram"
+                value={formData.instagram}
+                onChange={handleChange}
+                placeholder="Enter your Instagram username (without @)"
+                className={errors.instagram ? "border-red-500" : ""}
+              />
+              {errors.instagram && (
+                <p className="text-sm text-red-500 mt-1">{errors.instagram}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">
+                We'll tag you in our social media posts about your donation impact
+              </p>
             </div>
 
             <div>

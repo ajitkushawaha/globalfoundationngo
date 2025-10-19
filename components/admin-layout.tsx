@@ -85,17 +85,26 @@ export function AdminLayout({ children, title, subtitle }: AdminLayoutProps) {
     return () => document.removeEventListener('click', onDocClick)
   }, [])
 
-  const handleLogout = () => {
-    // Clear authentication data from localStorage
-    localStorage.removeItem('adminLoggedIn')
-    localStorage.removeItem('adminUser')
-    
-    // Clear cookies
-    document.cookie = 'adminLoggedIn=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-    document.cookie = 'adminUser=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-    
-    // Redirect to login page
-    router.push('/admin/login')
+  const handleLogout = async () => {
+    try {
+      // Call logout API to clear server-side cookies
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    } catch (error) {
+      console.error('Logout API error:', error)
+    } finally {
+      // Clear authentication data from localStorage
+      localStorage.removeItem('adminLoggedIn')
+      localStorage.removeItem('adminUser')
+      localStorage.removeItem('adminToken')
+      
+      // Redirect to login page
+      router.push('/admin/login')
+    }
   }
 
   const goToDonations = () => router.push('/admin/donations')

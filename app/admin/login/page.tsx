@@ -48,14 +48,10 @@ export default function AdminLoginPage() {
       const data = await response.json()
 
       if (data.success) {
-        // Store login state in localStorage
+        // Store login state in localStorage for client-side checks
         localStorage.setItem('adminLoggedIn', 'true')
         localStorage.setItem('adminUser', JSON.stringify(data.data.user))
         localStorage.setItem('adminToken', data.data.token)
-        
-        // Set cookie for server-side authentication
-        document.cookie = `adminLoggedIn=true; path=/; max-age=${7 * 24 * 60 * 60}` // 7 days
-        document.cookie = `adminUser=${JSON.stringify(data.data.user)}; path=/; max-age=${7 * 24 * 60 * 60}` // 7 days
         
         // Redirect to admin dashboard
         router.push('/admin')

@@ -72,7 +72,7 @@ export function LatestBlog({ blogPost }: LatestBlogProps) {
         <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-0">
             <div className="aspect-video lg:aspect-square relative">
-              {blogPost.mediaType === 'video' && blogPost.videoUrl ? (
+              {blogPost.mediaType === 'video' && blogPost.videoUrl && blogPost.videoUrl.trim() !== '' ? (
                 <img
                   src={getYouTubeThumbnailUrl(extractYouTubeVideoId(blogPost.videoUrl) || '')}
                   alt={blogPost.videoTitle || blogPost.title}
@@ -83,15 +83,17 @@ export function LatestBlog({ blogPost }: LatestBlogProps) {
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
                     <IconComponent className="h-20 w-20 text-primary/60" />
                   </div>
-                  <Image
-                    src={blogPost.image}
-                    alt={blogPost.imageAlt || blogPost.title}
-                    fill
-                    className="object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
+                  {blogPost.image && blogPost.image.trim() !== '' ? (
+                    <Image
+                      src={blogPost.image}
+                      alt={blogPost.imageAlt || blogPost.title}
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : null}
                 </>
               )}
             </div>

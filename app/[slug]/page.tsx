@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import connectToDatabase from '@/lib/mongodb'
 import Page from '@/lib/models/Page'
 import { PublicLayout } from '@/components/public-layout'
+import { BlogSidebar } from '@/components/blog-sidebar'
+import { DonationSpotlight } from '@/components/donation-spotlight'
 
 interface PageProps {
   params: {
@@ -107,47 +109,64 @@ export default async function DynamicPage({ params }: PageProps) {
       <PublicLayout>
         <div className="min-h-screen bg-gray-50">
           <div className="container mx-auto px-4 py-16">
-            <div className="max-w-4xl mx-auto">
-              {/* Page Header */}
-              <div className="mb-8">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                  {page.title}
-                </h1>
-                {page.excerpt && (
-                  <p className="text-xl text-gray-600 mb-6">
-                    {page.excerpt}
-                  </p>
-                )}
-                {page.featuredImage && (
-                  <div className="mb-8">
-                    <img
-                      src={page.featuredImage}
-                      alt={page.featuredImageAlt || page.title}
-                      className="w-full h-64 object-cover rounded-lg shadow-lg"
-                    />
-                  </div>
-                )}
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Left Sidebar - Donation Spotlight */}
+              <div className="lg:w-1/6 order-1 lg:order-1">
+                <div className="sticky top-8">
+                  <DonationSpotlight />
+                </div>
               </div>
 
-              {/* Page Content */}
-              <div className="prose prose-lg max-w-none">
-                <div 
-                dangerouslySetInnerHTML={{ 
-                  __html: formatContent(page.content) 
-                }}
-                />
+              {/* Main Content */}
+              <div className="lg:w-2/3 order-2 lg:order-2">
+                {/* Page Header */}
+                <div className="mb-8">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    {page.title}
+                  </h1>
+                  {page.excerpt && (
+                    <p className="text-xl text-gray-600 mb-6">
+                      {page.excerpt}
+                    </p>
+                  )}
+                  {page.featuredImage && (
+                    <div className="mb-8">
+                      <img
+                        src={page.featuredImage}
+                        alt={page.featuredImageAlt || page.title}
+                        className="w-full h-64 object-cover rounded-lg shadow-lg"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Page Content */}
+                <div className="prose prose-lg max-w-none">
+                  <div 
+                  dangerouslySetInnerHTML={{ 
+                    __html: formatContent(page.content) 
+                  }}
+                  />
+                </div>
+
+                {/* Page Footer */}
+                <div className="mt-12 pt-8 border-t border-gray-200">
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div>
+                      <p>Last updated: {new Date(page.updatedAt).toLocaleDateString()}</p>
+                      <p>Author: {page.author}</p>
+                    </div>
+                    <div>
+                      <p>Page Type: {page.pageType}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Page Footer */}
-              <div className="mt-12 pt-8 border-t border-gray-200">
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div>
-                    <p>Last updated: {new Date(page.updatedAt).toLocaleDateString()}</p>
-                    <p>Author: {page.author}</p>
-                  </div>
-                  <div>
-                    <p>Page Type: {page.pageType}</p>
-                  </div>
+              {/* Right Sidebar - Recent Stories */}
+              <div className="lg:w-1/6 order-3 lg:order-3">
+                <div className="sticky top-8">
+                  <BlogSidebar />
                 </div>
               </div>
             </div>

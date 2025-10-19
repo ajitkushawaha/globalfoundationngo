@@ -1,22 +1,28 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Heart, Menu } from "lucide-react"
+import { Heart, Menu, ChevronDown } from "lucide-react"
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const pathname = usePathname()
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const navigation = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
-    { name: "Blog", href: "/blog" },
+    { name: "Gallery", href: "/gallery" },
     { name: "Trust & Transparency", href: "/trust-transparency" },
+  ]
+
+  const dropdownItems = [
+    { name: "Blog", href: "/blog" },
     { name: "Contact", href: "/contact" },
     { name: "Donate", href: "/donate" },
   ]
@@ -27,6 +33,20 @@ export function Header() {
     }
     return pathname.startsWith(href)
   }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 w-full p-4  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-md">
@@ -48,13 +68,45 @@ export function Header() {
             <Link
               key={item.name}
               href={item.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                isActive(item.href) ? "text-primary" : "text-muted-foreground"
+              className={`text-sm font-medium transition-colors hover:text-primary px-3 py-2 rounded-md hover:bg-primary/5 ${
+                isActive(item.href) 
+                  ? "text-primary bg-primary/10" 
+                  : "text-muted-foreground"
               }`}
             >
               {item.name}
             </Link>
           ))}
+          
+          {/* Dropdown Menu */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="text-sm font-semibold transition-colors hover:text-primary px-3 py-2 rounded-md hover:bg-primary/5 text-primary flex items-center gap-1"
+            >
+              More
+              <ChevronDown className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
+                {dropdownItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setIsDropdownOpen(false)}
+                    className={`block px-4 py-2 text-sm transition-colors hover:bg-primary/5 ${
+                      isActive(item.href) 
+                        ? "text-primary bg-primary/10" 
+                        : "text-muted-foreground hover:text-primary"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         <div className="flex items-center space-x-4">
@@ -80,19 +132,40 @@ export function Header() {
                   </div>
                 </div>
 
-                <nav className="flex flex-col space-y-4">
+                <nav className="flex flex-col space-y-2">
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
                       href={item.href}
                       onClick={() => setIsOpen(false)}
-                      className={`text-lg font-medium transition-colors hover:text-primary ${
-                        isActive(item.href) ? "text-primary" : "text-muted-foreground"
+                      className={`text-lg font-medium transition-colors hover:text-primary px-4 py-3 rounded-lg hover:bg-primary/5 ${
+                        isActive(item.href) 
+                          ? "text-primary bg-primary/10" 
+                          : "text-muted-foreground"
                       }`}
                     >
                       {item.name}
                     </Link>
                   ))}
+                  
+                  {/* Mobile Dropdown Items */}
+                  <div className="border-t border-gray-200 pt-4 mt-4">
+                    <div className="text-sm font-semibold text-primary mb-2 px-4">More Options</div>
+                    {dropdownItems.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className={`text-lg font-medium transition-colors hover:text-primary px-4 py-3 rounded-lg hover:bg-primary/5 ${
+                          isActive(item.href) 
+                            ? "text-primary bg-primary/10" 
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
                 </nav>
 
                 <div className="pt-6 border-t">

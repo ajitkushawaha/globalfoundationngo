@@ -13,6 +13,7 @@ export interface IDonorInfo {
   name: string
   email: string
   phone?: string
+  instagram?: string
   message?: string
   anonymous: boolean
 }
@@ -43,6 +44,7 @@ const DonorInfoSchema = new Schema<IDonorInfo>({
   name: { type: String, required: true, trim: true },
   email: { type: String, required: true, trim: true },
   phone: { type: String, trim: true },
+  instagram: { type: String, trim: true },
   message: { type: String, trim: true },
   anonymous: { type: Boolean, default: false },
 }, { _id: false })

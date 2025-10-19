@@ -21,7 +21,10 @@ import {
   Stethoscope,
   Baby,
   Camera,
-  Gift
+  Gift,
+  PartyPopper,
+  X,
+  Sparkles
 } from "lucide-react"
 import Image from "next/image"
 
@@ -55,6 +58,10 @@ export default function DonatePage() {
   const [donationCategories, setDonationCategories] = useState<DonationCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [recentDonors, setRecentDonors] = useState<string[] | null>(null)
+  const [congratulations, setCongratulations] = useState<{[key: string]: boolean}>({})
+  const [congratulationsTimeout, setCongratulationsTimeout] = useState<{[key: string]: NodeJS.Timeout}>({})
+  const [fireworks, setFireworks] = useState<{[key: string]: boolean}>({})
+  const [particles, setParticles] = useState<{[key: string]: Array<{id: number, x: number, y: number, vx: number, vy: number, life: number}>}>({})
 
   // Load donation categories from API
   useEffect(() => {
@@ -93,6 +100,15 @@ export default function DonatePage() {
     }
     loadDonors()
   }, [])
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(congratulationsTimeout).forEach(timeout => {
+        clearTimeout(timeout)
+      })
+    }
+  }, [congratulationsTimeout])
 
   // Fallback categories if API fails
   const fallbackCategories: DonationCategory[] = [
@@ -207,12 +223,130 @@ export default function DonatePage() {
       })
       setTotalAmount(total)
       
+      // Check for congratulations (temporary progress)
+      const category = categoriesToUse.find(c => c.id === categoryId)
+      if (category && newQuantity > 0) {
+        const tempProgress = (category.currentFunded + newQuantity) / category.targetGoal
+        if (tempProgress >= 1) {
+          // Show congratulations
+          setCongratulations(prev => ({ ...prev, [categoryId]: true }))
+          
+          // Create fireworks and particles
+          createFireworks(categoryId)
+          
+          // Play success sound
+          try {
+            // Create a more celebratory sound using Web Audio API
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+            
+            // Create a chord progression for celebration
+            const frequencies = [523.25, 659.25, 783.99] // C, E, G
+            frequencies.forEach((freq, index) => {
+              const oscillator = audioContext.createOscillator()
+              const gainNode = audioContext.createGain()
+              
+              oscillator.connect(gainNode)
+              gainNode.connect(audioContext.destination)
+              
+              oscillator.frequency.setValueAtTime(freq, audioContext.currentTime + index * 0.1)
+              oscillator.frequency.setValueAtTime(freq * 1.2, audioContext.currentTime + index * 0.1 + 0.1)
+              
+              gainNode.gain.setValueAtTime(0.2, audioContext.currentTime + index * 0.1)
+              gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.1 + 0.5)
+              
+              oscillator.start(audioContext.currentTime + index * 0.1)
+              oscillator.stop(audioContext.currentTime + index * 0.1 + 0.5)
+            })
+          } catch (e) {
+            // Ignore audio errors
+          }
+          
+          // Clear any existing timeout for this category
+          if (congratulationsTimeout[categoryId]) {
+            clearTimeout(congratulationsTimeout[categoryId])
+          }
+          
+          // Set timeout to hide congratulations after 5 minutes
+          const timeout = setTimeout(() => {
+            setCongratulations(prev => ({ ...prev, [categoryId]: false }))
+            setFireworks(prev => ({ ...prev, [categoryId]: false }))
+            setParticles(prev => ({ ...prev, [categoryId]: [] }))
+          }, 300000) // 5 minutes
+          
+          setCongratulationsTimeout(prev => ({ ...prev, [categoryId]: timeout }))
+        }
+      }
+      
       return newItems
     })
   }
 
   const getProgressPercentage = (current: number, target: number) => {
     return Math.min((current / target) * 100, 100)
+  }
+
+  const hideCongratulations = (categoryId: string) => {
+    setCongratulations(prev => ({ ...prev, [categoryId]: false }))
+    setFireworks(prev => ({ ...prev, [categoryId]: false }))
+    setParticles(prev => ({ ...prev, [categoryId]: [] }))
+    if (congratulationsTimeout[categoryId]) {
+      clearTimeout(congratulationsTimeout[categoryId])
+      setCongratulationsTimeout(prev => {
+        const newTimeouts = { ...prev }
+        delete newTimeouts[categoryId]
+        return newTimeouts
+      })
+    }
+  }
+
+  const createFireworks = (categoryId: string) => {
+    // Show fireworks
+    setFireworks(prev => ({ ...prev, [categoryId]: true }))
+    
+    // Create particles
+    const newParticles: Array<{id: number, x: number, y: number, vx: number, vy: number, life: number}> = []
+    for (let i = 0; i < 50; i++) {
+      const angle = (Math.PI * 2 * i) / 50
+      const velocity = 2 + Math.random() * 3
+      newParticles.push({
+        id: i,
+        x: 50, // Center of the card
+        y: 50,
+        vx: Math.cos(angle) * velocity,
+        vy: Math.sin(angle) * velocity,
+        life: 1.0
+      })
+    }
+    setParticles(prev => ({ ...prev, [categoryId]: newParticles }))
+    
+    // Animate particles
+    const animateParticles = () => {
+      setParticles(prev => {
+        const currentParticles = prev[categoryId] || []
+        const updatedParticles = currentParticles
+          .map(particle => ({
+            ...particle,
+            x: particle.x + particle.vx,
+            y: particle.y + particle.vy,
+            vy: particle.vy + 0.1, // Gravity
+            life: particle.life - 0.02
+          }))
+          .filter(particle => particle.life > 0)
+        
+        if (updatedParticles.length > 0) {
+          setTimeout(animateParticles, 50)
+        }
+        
+        return { ...prev, [categoryId]: updatedParticles }
+      })
+    }
+    
+    setTimeout(animateParticles, 50)
+    
+    // Hide fireworks after 3 seconds
+    setTimeout(() => {
+      setFireworks(prev => ({ ...prev, [categoryId]: false }))
+    }, 3000)
   }
 
   const handleProceedToDonate = () => {
@@ -271,6 +405,10 @@ export default function DonatePage() {
 
     } catch (error) {
       console.error('Donation error:', error)
+      // Hide congratulations on donation failure
+      Object.keys(selectedItems).forEach(categoryId => {
+        hideCongratulations(categoryId)
+      })
       alert('Failed to submit donation. Please try again or contact us directly.')
     } finally {
       setIsProcessing(false)
@@ -386,8 +524,59 @@ export default function DonatePage() {
                 const quantity = selectedItems[category.id] || 0
                 
                 return (
-                  <Card key={category.id} className="hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
+                  <Card key={category.id} className="hover:shadow-lg transition-shadow relative overflow-hidden">
+                    {/* Fireworks Overlay */}
+                    {fireworks[category.id] && (
+                      <div className="absolute inset-0 pointer-events-none z-10">
+                        {/* Main firework burst */}
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                          <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full firework-burst"></div>
+                          <div className="w-8 h-8 bg-gradient-to-r from-red-400 to-pink-500 rounded-full absolute top-1 left-1 firework-burst animation-delay-100"></div>
+                          <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full absolute top-2 left-2 firework-burst animation-delay-200"></div>
+                        </div>
+                        
+                        {/* Secondary bursts */}
+                        <div className="absolute top-1/4 left-1/4">
+                          <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full firework-burst animation-delay-300"></div>
+                        </div>
+                        <div className="absolute top-3/4 right-1/4">
+                          <div className="w-6 h-6 bg-gradient-to-r from-pink-400 to-rose-500 rounded-full firework-burst animation-delay-400"></div>
+                        </div>
+                        <div className="absolute top-1/3 right-1/3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-indigo-500 rounded-full firework-burst animation-delay-500"></div>
+                        </div>
+                        <div className="absolute bottom-1/4 left-1/3">
+                          <div className="w-7 h-7 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full firework-burst animation-delay-200"></div>
+                        </div>
+                        <div className="absolute top-1/2 right-1/2">
+                          <div className="w-5 h-5 bg-gradient-to-r from-yellow-300 to-orange-400 rounded-full firework-burst animation-delay-400"></div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Particle Effects */}
+                    {particles[category.id] && particles[category.id].length > 0 && (
+                      <div className="absolute inset-0 pointer-events-none z-20">
+                        {particles[category.id].map((particle) => (
+                          <div
+                            key={particle.id}
+                            className="absolute w-2 h-2 rounded-full sparkle-twinkle"
+                            style={{
+                              left: `${particle.x}%`,
+                              top: `${particle.y}%`,
+                              opacity: particle.life,
+                              transform: `scale(${particle.life}) rotate(${particle.id * 10}deg)`,
+                              background: `linear-gradient(45deg, 
+                                hsl(${particle.id * 36}, 70%, 60%), 
+                                hsl(${(particle.id * 36 + 60) % 360}, 70%, 60%))`,
+                              animationDelay: `${particle.id * 0.05}s`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                    
+                    <CardContent className="p-6 relative z-30">
                       <div className="text-center mb-4">
                         <div className={`w-16 h-16 ${category.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
                           <IconComponent className={`w-8 h-8 ${category.color}`} />
@@ -414,6 +603,43 @@ export default function DonatePage() {
                           {Math.round(progress)}% funded • {category.donors} donors
                         </div>
                       </div>
+
+                      {/* Congratulations Banner */}
+                      {congratulations[category.id] && (
+                        <div className="mb-4 p-4 bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 border-2 border-green-300 rounded-lg animate-pulse relative overflow-hidden">
+                          {/* Sparkle effects */}
+                          <div className="absolute inset-0 pointer-events-none">
+                            <div className="absolute top-2 left-2">
+                              <Sparkles className="w-3 h-3 text-yellow-400 animate-spin" />
+                            </div>
+                            <div className="absolute top-3 right-3">
+                              <Sparkles className="w-2 h-2 text-orange-400 animate-bounce" />
+                            </div>
+                            <div className="absolute bottom-2 left-4">
+                              <Sparkles className="w-2 h-2 text-pink-400 animate-ping" />
+                            </div>
+                            <div className="absolute bottom-3 right-2">
+                              <Sparkles className="w-3 h-3 text-blue-400 animate-pulse" />
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-center space-x-2 relative z-10">
+                            <div className="flex space-x-1">
+                              <PartyPopper className="w-5 h-5 text-green-600 animate-bounce" />
+                              <Sparkles className="w-4 h-4 text-yellow-500 animate-spin" />
+                            </div>
+                            <span className="text-green-800 font-bold text-sm bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                              🎉 TARGET REACHED! Pending payment...
+                            </span>
+                            <button
+                              onClick={() => hideCongratulations(category.id)}
+                              className="text-green-600 hover:text-green-800 transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Quantity Selector */}
                       <div className="flex items-center justify-center space-x-3 mb-4">
@@ -591,61 +817,6 @@ export default function DonatePage() {
         </div>
       </section>
 
-      {/* Bank & UPI Details */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-                Donate via Bank Transfer or UPI
-              </h2>
-              <div className="w-24 h-1 bg-primary mx-auto mb-6" />
-              <p className="text-lg text-muted-foreground">
-                Use the official bank details of Global Education and Charitable Trust or scan the UPI to donate directly.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 items-start">
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Bank Transfer Details</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Account Name</span>
-                      <span className="font-medium text-right">Global Education and Charitable Trust</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Account Number</span>
-                      <span className="font-medium">9551204332</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">IFSC Code</span>
-                      <span className="font-medium">KKBK0000838</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Branch</span>
-                      <span className="font-medium">NARANPURA</span>
-                    </div>
-                  </div>
-                  <div className="mt-6 rounded-lg overflow-hidden border">
-                    <Image src="/bank.jpeg" alt="Bank details" width={1200} height={800} className="w-full h-auto object-contain bg-white" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">UPI Payment</h3>
-                  <p className="text-sm text-muted-foreground mb-4">Scan the QR code below to donate via UPI.</p>
-                  <div className="rounded-lg overflow-hidden border max-w-md mx-auto">
-                    <Image src="/upi.jpeg" alt="UPI QR code" width={800} height={800} className="w-full h-auto object-contain bg-white" />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Donor Wall */}
       <section className="py-20">

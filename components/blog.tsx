@@ -228,7 +228,7 @@ export function Blog() {
             return (
               <Card key={post._id} className="overflow-hidden hover:shadow-lg transition-all duration-300 group">
                 <div className="aspect-video relative">
-                  {post.mediaType === 'video' && post.videoUrl ? (
+                  {post.mediaType === 'video' && post.videoUrl && post.videoUrl.trim() !== '' ? (
                     <img
                       src={getYouTubeThumbnailUrl(extractYouTubeVideoId(post.videoUrl) || '')}
                       alt={post.videoTitle || post.title}
@@ -239,15 +239,17 @@ export function Blog() {
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
                         <IconComponent className="h-12 w-12 text-primary/60" />
                       </div>
-                      <Image
-                        src={post.image}
-                        alt={post.imageAlt || post.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
+                      {post.image && post.image.trim() !== '' ? (
+                        <Image
+                          src={post.image}
+                          alt={post.imageAlt || post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : null}
                     </>
                   )}
                 </div>
