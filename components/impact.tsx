@@ -1,5 +1,8 @@
+"use client"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Users, Heart, TreePine, GraduationCap } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface Statistic {
   _id: string
@@ -26,85 +29,100 @@ const iconMap: { [key: string]: any } = {
   "❤️": Heart
 }
 
-async function getStats(): Promise<Statistic[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  const url = `${baseUrl}/api/statistics`
+export function Impact() {
+  const [stats, setStats] = useState<Statistic[]>([])
+  const [loading, setLoading] = useState(true)
 
-  try {
-    const response = await fetch(url, {
-      cache: 'no-store',
-      next: { revalidate: 120 }
-    })
-
-    if (!response.ok) {
-      return []
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/statistics')
+        if (response.ok) {
+          const data = await response.json()
+          if (data?.success && Array.isArray(data.data)) {
+            setStats(data.data
+              .filter((stat: Statistic) => stat.isActive)
+              .sort((a: Statistic, b: Statistic) => a.order - b.order)
+            )
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching statistics:', error)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    const data = await response.json()
-    if (data?.success && Array.isArray(data.data)) {
-      return data.data
-        .filter((stat: Statistic) => stat.isActive)
-        .sort((a: Statistic, b: Statistic) => a.order - b.order)
-    }
-    return []
-  } catch (error) {
-    console.error('Error fetching statistics:', error)
-    return []
-  }
-}
+    fetchStats()
+  }, [])
 
-export async function Impact() {
-  const stats = await getStats()
-
-  if (!stats || stats.length === 0) {
+  if (loading) {
     return (
-      <section id="impact" className="py-20 bg-muted/30 p-4">
-        <div className="container">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-red-600" style={{ fontFamily: "var(--font-playfair)" }}>
-              Error Loading Statistics
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Unable to load impact statistics. Please try again later.
-            </p>
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+                Our Impact in Numbers
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-6" />
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Every donation, every volunteer hour, and every life touched contributes to our mission of creating positive change.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Card key={i} className="text-center animate-pulse">
+                  <CardContent className="p-6">
+                    <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4"></div>
+                    <div className="h-8 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
       </section>
     )
   }
 
-  return (
-    <section id="impact" className="py-20 bg-muted/30 p-4">
-      <div className="container">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
-            Milestones of Change
-          </h2>
-          <div className="w-24 h-1 bg-primary mx-auto mb-6" />
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Our impact speaks through numbers, but behind each statistic is a life transformed, a future brightened, and
-            hope restored.
-          </p>
-        </div>
+  if (stats.length === 0) {
+    return null
+  }
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const IconComponent = iconMap[stat.icon] || Users
-            
-            return (
-              <Card key={stat._id} className="text-center hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className={`inline-flex h-16 w-16 items-center justify-center rounded-full ${stat.bgColor} mb-4`}>
-                    <IconComponent className={`h-8 w-8 ${stat.color}`} />
-                  </div>
-                  <div className="text-3xl md:text-4xl font-bold mb-2" style={{ fontFamily: "var(--font-playfair)" }}>
-                    {stat.value}
-                  </div>
-                  <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                </CardContent>
-              </Card>
-            )
-          })}
+  return (
+    <section className="py-20 bg-muted/30">
+      <div className="container mx-auto px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+              Our Impact in Numbers
+            </h2>
+            <div className="w-24 h-1 bg-primary mx-auto mb-6" />
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Every donation, every volunteer hour, and every life touched contributes to our mission of creating positive change.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((stat) => {
+              const IconComponent = iconMap[stat.icon] || iconMap["👥"]
+              return (
+                <Card key={stat._id} className="text-center hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className={`w-16 h-16 ${stat.bgColor} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                      <IconComponent className={`w-8 h-8 ${stat.color}`} />
+                    </div>
+                    <h3 className="text-3xl font-bold text-primary mb-2">{stat.value}</h3>
+                    <p className="text-lg font-semibold mb-2">{stat.label}</p>
+                    <p className="text-sm text-muted-foreground">{stat.description}</p>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
         </div>
       </div>
     </section>

@@ -1,5 +1,8 @@
+"use client"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Users, Heart, GraduationCap, TreePine } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface Statistic {
   _id: string
@@ -26,53 +29,66 @@ const iconMap: { [key: string]: any } = {
   "❤️": Heart
 }
 
-async function getStats(): Promise<Statistic[]> {
-  // Use absolute URL for server-side rendering
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  const url = `${baseUrl}/api/statistics`
+export function Stats() {
+  const [stats, setStats] = useState<Statistic[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Add a safety timeout to prevent hanging requests
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 5000)
-
-  try {
-    const response = await fetch(url, {
-      cache: 'no-store',
-      // small revalidate window can be used if needed instead of no-store
-      // next: { revalidate: 120 },
-      signal: controller.signal,
-    })
-
-    if (!response.ok) {
-      return []
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/statistics')
+        if (response.ok) {
+          const data = await response.json()
+          if (data?.success && Array.isArray(data.data)) {
+            setStats(data.data
+              .filter((stat: Statistic) => stat.isActive)
+              .sort((a: Statistic, b: Statistic) => a.order - b.order)
+            )
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching statistics:', error)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    let data: any
-    try {
-      data = await response.json()
-    } catch {
-      return []
-    }
+    fetchStats()
+  }, [])
 
-    if (data?.success && Array.isArray(data.data)) {
-      return data.data
-        .filter((stat: Statistic) => stat.isActive)
-        .sort((a: Statistic, b: Statistic) => a.order - b.order)
-    }
-    return []
-  } catch (error) {
-    console.error('Error fetching statistics:', error)
-    return []
-  } finally {
-    clearTimeout(timeout)
+  if (loading) {
+    return (
+      <section className="py-20 bg-primary text-primary-foreground p-4">
+        <div className="container">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-white/10 rounded-full text-sm font-medium text-white/90 mb-4">
+              Our Impact
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
+              Making a Real Difference
+            </h2>
+            <p className="text-lg text-white/80 max-w-2xl mx-auto">
+              Numbers that reflect our commitment to creating lasting positive change in our community.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i} className="bg-white/10 border-white/20 backdrop-blur-sm animate-pulse">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-white/20 rounded-full mx-auto mb-4"></div>
+                  <div className="h-8 bg-white/20 rounded mb-2"></div>
+                  <div className="h-4 bg-white/20 rounded mb-2"></div>
+                  <div className="h-3 bg-white/20 rounded"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
   }
-}
 
-export async function Stats() {
-  const stats = await getStats()
-
-  if (!stats || stats.length === 0) {
-    // If no stats available (e.g., API timeout), avoid rendering an empty section
+  if (stats.length === 0) {
     return null
   }
 
@@ -92,7 +108,7 @@ export async function Stats() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
+          {stats.map((stat) => {
             const IconComponent = iconMap[stat.icon] || Users
             return (
               <Card key={stat._id} className="bg-white/10 border-white/20 backdrop-blur-sm">
