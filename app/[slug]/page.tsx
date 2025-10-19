@@ -9,6 +9,24 @@ interface PageProps {
   }
 }
 
+interface PageData {
+  _id: string
+  title: string
+  slug: string
+  content: string
+  excerpt?: string
+  seoTitle?: string
+  seoDescription?: string
+  seoKeywords?: string[]
+  featuredImage?: string
+  featuredImageAlt?: string
+  pageType: 'static' | 'dynamic' | 'landing'
+  status: 'draft' | 'published' | 'archived'
+  author?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
 export async function generateStaticParams() {
   try {
     await connectToDatabase()
@@ -28,7 +46,7 @@ export async function generateMetadata({ params }: PageProps) {
     const page = await Page.findOne({ 
       slug: params.slug,
       status: 'published'
-    }).lean()
+    }).lean() as PageData | null
 
     if (!page) {
       return {
@@ -37,17 +55,14 @@ export async function generateMetadata({ params }: PageProps) {
       }
     }
 
-    // Ensure page is a single object, not an array
-    const pageData = Array.isArray(page) ? page[0] : page
-
     return {
-      title: pageData.seoTitle || pageData.title,
-      description: pageData.seoDescription || pageData.excerpt,
-      keywords: pageData.seoKeywords?.join(', '),
+      title: page.seoTitle || page.title,
+      description: page.seoDescription || page.excerpt,
+      keywords: page.seoKeywords?.join(', '),
       openGraph: {
-        title: pageData.seoTitle || pageData.title,
-        description: pageData.seoDescription || pageData.excerpt,
-        images: pageData.featuredImage ? [pageData.featuredImage] : [],
+        title: page.seoTitle || page.title,
+        description: page.seoDescription || page.excerpt,
+        images: page.featuredImage ? [page.featuredImage] : [],
       },
     }
   } catch (error) {
@@ -66,14 +81,11 @@ export default async function DynamicPage({ params }: PageProps) {
     const page = await Page.findOne({ 
       slug: params.slug,
       status: 'published'
-    }).lean()
+    }).lean() as PageData | null
 
     if (!page) {
       notFound()
     }
-
-    // Ensure page is a single object, not an array
-    const pageData = Array.isArray(page) ? page[0] : page
 
     const formatContent = (content: string) => {
       return content
@@ -99,18 +111,18 @@ export default async function DynamicPage({ params }: PageProps) {
               {/* Page Header */}
               <div className="mb-8">
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                  {pageData.title}
+                  {page.title}
                 </h1>
-                {pageData.excerpt && (
+                {page.excerpt && (
                   <p className="text-xl text-gray-600 mb-6">
-                    {pageData.excerpt}
+                    {page.excerpt}
                   </p>
                 )}
-                {pageData.featuredImage && (
+                {page.featuredImage && (
                   <div className="mb-8">
                     <img
-                      src={pageData.featuredImage}
-                      alt={pageData.featuredImageAlt || pageData.title}
+                      src={page.featuredImage}
+                      alt={page.featuredImageAlt || page.title}
                       className="w-full h-64 object-cover rounded-lg shadow-lg"
                     />
                   </div>
@@ -121,7 +133,7 @@ export default async function DynamicPage({ params }: PageProps) {
               <div className="prose prose-lg max-w-none">
                 <div 
                 dangerouslySetInnerHTML={{ 
-                  __html: formatContent(pageData.content) 
+                  __html: formatContent(page.content) 
                 }}
                 />
               </div>
@@ -130,11 +142,11 @@ export default async function DynamicPage({ params }: PageProps) {
               <div className="mt-12 pt-8 border-t border-gray-200">
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <div>
-                    <p>Last updated: {new Date(pageData.updatedAt).toLocaleDateString()}</p>
-                    <p>Author: {pageData.author}</p>
+                    <p>Last updated: {new Date(page.updatedAt).toLocaleDateString()}</p>
+                    <p>Author: {page.author}</p>
                   </div>
                   <div>
-                    <p>Page Type: {pageData.pageType}</p>
+                    <p>Page Type: {page.pageType}</p>
                   </div>
                 </div>
               </div>
