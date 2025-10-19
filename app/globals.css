@@ -4,40 +4,40 @@
 @import "tw-animate-css";
 
 :root {
-  /* Updated color tokens to green theme for NGO */
-  --background: 0 0% 100%; /* White background */
-  --foreground: 0 0% 20%; /* Deep gray text */
-  --card: 0 0% 98%; /* Light gray card background */
-  --card-foreground: 0 0% 35%; /* Medium gray card text */
+  /* Saffron color scheme for NGO - Professional, accessible, and inspiring */
+  --background: 48 100% 97%; /* Cream/off-white background (#FFF8E1) */
+  --foreground: 0 0% 20%; /* Dark gray text for accessibility */
+  --card: 0 0% 100%; /* Pure white card background */
+  --card-foreground: 0 0% 20%; /* Dark gray card text */
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 20%;
-  --primary: 142 76% 36%; /* Forest green primary color */
-  --primary-foreground: 0 0% 100%; /* White text on green */
-  --secondary: 0 0% 56%; /* Medium gray secondary */
-  --secondary-foreground: 0 0% 100%;
-  --muted: 0 0% 97%; /* Light gray muted */
-  --muted-foreground: 0 0% 35%;
-  --accent: 164 70% 45%; /* Teal accent */
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 84% 60%;
+  --primary: 33 100% 50%; /* Saffron/deep orange primary (#FF8C00) */
+  --primary-foreground: 0 0% 100%; /* White text on saffron */
+  --secondary: 0 0% 96%; /* Light gray secondary */
+  --secondary-foreground: 0 0% 20%; /* Dark text on light background */
+  --muted: 48 100% 95%; /* Very light saffron tint */
+  --muted-foreground: 0 0% 35%; /* Medium gray muted text */
+  --accent: 180 50% 40%; /* Muted teal accent for contrast */
+  --accent-foreground: 0 0% 100%; /* White text on teal */
+  --destructive: 0 84% 60%; /* Red for errors */
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 92%;
-  --input: 0 0% 100%;
-  --ring: 142 76% 36%; /* Green ring */
-  --chart-1: 142 76% 36%; /* Forest green for charts */
-  --chart-2: 164 70% 45%; /* Teal for charts */
-  --chart-3: 142 50% 50%; /* Light green for charts */
-  --chart-4: 164 50% 35%; /* Dark teal for charts */
-  --chart-5: 142 76% 25%; /* Dark green for charts */
+  --border: 0 0% 90%; /* Light gray borders */
+  --input: 0 0% 100%; /* White input backgrounds */
+  --ring: 33 100% 50%; /* Saffron ring for focus */
+  --chart-1: 33 100% 50%; /* Saffron for charts */
+  --chart-2: 180 50% 40%; /* Teal for charts */
+  --chart-3: 33 80% 60%; /* Light saffron for charts */
+  --chart-4: 180 40% 30%; /* Dark teal for charts */
+  --chart-5: 33 100% 40%; /* Dark saffron for charts */
   --radius: 0.5rem;
-  --sidebar: 0 0% 97%;
+  --sidebar: 48 100% 95%; /* Light saffron sidebar */
   --sidebar-foreground: 0 0% 20%;
   --sidebar-primary: 0 0% 100%;
   --sidebar-primary-foreground: 0 0% 20%;
-  --sidebar-accent: 142 76% 36%;
+  --sidebar-accent: 33 100% 50%; /* Saffron sidebar accent */
   --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-border: 0 0% 92%;
-  --sidebar-ring: 142 76% 36%;
+  --sidebar-border: 0 0% 90%;
+  --sidebar-ring: 33 100% 50%;
   --font-inter: "Inter", sans-serif;
   --font-playfair: "Playfair Display", serif;
 }
@@ -49,38 +49,74 @@
   --card-foreground: 0 0% 98%;
   --popover: 0 0% 15%;
   --popover-foreground: 0 0% 98%;
-  --primary: 142 76% 36%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 27%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 0 0% 27%;
-  --muted-foreground: 0 0% 71%;
-  --accent: 164 70% 45%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 27%;
-  --input: 0 0% 27%;
-  --ring: 142 76% 36%;
-  --chart-1: 142 76% 36%;
-  --chart-2: 164 70% 45%;
-  --chart-3: 142 50% 50%;
-  --chart-4: 164 50% 35%;
-  --chart-5: 142 76% 25%;
-  --sidebar: 0 0% 20%;
-  --sidebar-foreground: 0 0% 98%;
-  --sidebar-primary: 264 85% 50%;
-  --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 0 0% 27%;
-  --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-border: 0 0% 27%;
-  --sidebar-ring: 0 0% 44%;
+  --primary: 33 100% 60%; /* Brighter saffron for dark mode */
+  --primary-foreground: 0 0% 10%; /* Dark text on bright saffron */
+  --secondary: 0 0% 20%; /* Dark gray secondary */
+  --secondary-foreground: 0 0% 95%; /* Light text on dark */
+  --muted: 0 0% 15%; /* Dark muted background */
+  --muted-foreground: 0 0% 70%; /* Medium light muted text */
+  --accent: 180 50% 50%; /* Brighter teal for dark mode */
+  --accent-foreground: 0 0% 10%; /* Dark text on bright teal */
+  --destructive: 0 62% 50%; /* Brighter red for dark mode */
+  --destructive-foreground: 0 0% 95%;
+  --border: 0 0% 25%; /* Dark borders */
+  --input: 0 0% 15%; /* Dark input backgrounds */
+  --ring: 33 100% 60%; /* Bright saffron ring */
+  --chart-1: 33 100% 60%; /* Bright saffron for charts */
+  --chart-2: 180 50% 50%; /* Bright teal for charts */
+  --chart-3: 33 80% 70%; /* Light saffron for charts */
+  --chart-4: 180 40% 40%; /* Medium teal for charts */
+  --chart-5: 33 100% 50%; /* Medium saffron for charts */
+  --sidebar: 0 0% 10%; /* Dark sidebar */
+  --sidebar-foreground: 0 0% 95%;
+  --sidebar-primary: 0 0% 15%;
+  --sidebar-primary-foreground: 0 0% 95%;
+  --sidebar-accent: 33 100% 60%; /* Bright saffron sidebar accent */
+  --sidebar-accent-foreground: 0 0% 10%;
+  --sidebar-border: 0 0% 25%;
+  --sidebar-ring: 33 100% 60%;
 }
 
 
 * {
   border-color: var(--border);
   outline-color: var(--ring);
+}
+
+/* Saffron theme utility classes */
+@layer utilities {
+  .text-saffron {
+    color: hsl(33 100% 50%);
+  }
+  
+  .bg-saffron {
+    background-color: hsl(33 100% 50%);
+  }
+  
+  .bg-saffron-light {
+    background-color: hsl(48 100% 95%);
+  }
+  
+  .bg-saffron-cream {
+    background-color: hsl(48 100% 97%);
+  }
+  
+  .border-saffron {
+    border-color: hsl(33 100% 50%);
+  }
+  
+  .hover-saffron:hover {
+    background-color: hsl(33 100% 50%);
+    color: white;
+  }
+  
+  .gradient-saffron {
+    background: linear-gradient(135deg, hsl(33 100% 50%) 0%, hsl(33 100% 40%) 100%);
+  }
+  
+  .gradient-saffron-subtle {
+    background: linear-gradient(135deg, hsl(48 100% 97%) 0%, hsl(48 100% 95%) 100%);
+  }
 }
 
 body {
